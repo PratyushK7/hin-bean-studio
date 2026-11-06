@@ -38,7 +38,7 @@ Open http://localhost:3000.
 ## AI tasks
 
 - **Research brief** uses the Responses API web_search tool and requires a search-enabled model.
-- Ideas, scripts, storyboards, revisions and YouTube packaging use the Responses API without web search.
+- Ideas, scripts, storyboards, revisions and YouTube packaging use the Responses API without web search. The visual-code task can generate a standalone HTML/SVG/JavaScript scene that you download, inspect and render locally.
 - The selected model is controlled by OPENAI_MODEL.
 
 OpenAI API usage is billed separately from a ChatGPT subscription. Vercel hosting and OpenAI API usage may both incur charges according to their respective plans and usage.
@@ -49,7 +49,7 @@ OpenAI API usage is billed separately from a ChatGPT subscription. Vercel hostin
 - A signed, HTTP-only, seven-day session cookie protects the app. The shared password gate is intended for a personal single-owner deployment, not a public multi-user product.
 - This initial web app does not include account registration, cloud project persistence, a database, or a remote-control channel into your PC.
 - Do not expose the existing Flask local dashboard directly to the public internet. It is designed to bind to localhost and can execute local commands.
-- The browser can export a JSON handoff. Copy the generated content into the local project and use your PC for all media production.
+- The browser can export a JSON handoff for research and writing, or a standalone `scene.html` for generated motion graphics. Inspect AI-generated code before running it; copy it into the local project and use your PC for all media production.
 
 ## Next integration step
 
