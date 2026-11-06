@@ -5,14 +5,14 @@ description: Writes and edits natural spoken-Hindi scripts for serious explainer
 
 # Hindi script skill
 
-Write for the ear, not for the page. The result should sound like an intelligent Hindi-speaking person explaining something clearly to another curious person.
+Write for the ear, not for the page. The result should sound like an intelligent Hindi-speaking person explaining something clearly to another curious person. Follow the explicit project language preference. This first project uses Roman-script Hinglish, with natural Hindi sentence structure and familiar English technical terms.
 
 ## Language and register
 
-- Use Devanagari for Hindi narration.
+- Default to Devanagari unless the user requests Hinglish. For Hinglish, use Roman script consistently; do not switch scripts mid-sentence.
 - Use conversational, contemporary Hindi. Prefer familiar words over unnecessarily Sanskritised constructions.
 - Keep widely used technical terms in English where that is clearer (for example, `डेटा`, `सिस्टम`, `एल्गोरिदम`, `इंटरनेट`). Explain a specialised term at first use.
-- Do not switch randomly between Hindi and English. Keep the sentence structure Hindi even when a technical noun is English.
+- In Hinglish, keep the sentence structure conversational Hindi while retaining common English words naturally. Avoid awkward literal translation and random code-switching.
 - Avoid literal translation, textbook prose, rhetorical filler, exaggerated adjectives and repetitive rhetorical questions.
 - Read each sentence aloud mentally. Rewrite tongue-twisters and long clauses.
 
@@ -66,7 +66,7 @@ Choose the strongest accurate hook, not the loudest one. Never start with unsupp
 ## Script output
 
 Return:
-- the final spoken script in Devanagari;
+- the final spoken script in the user's requested script (Devanagari or Roman Hinglish);
 - a sentence-by-sentence numbered version for timing;
 - pronunciation notes;
 - source claim IDs beside non-obvious factual claims in the editorial copy (not spoken aloud);
