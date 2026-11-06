@@ -22,7 +22,7 @@ from ytstate import norm
 TYPES = ["Scenario", "Myth test", "Why", "True story", "Versus", "Ranking", "Timeline", "Paradox", "Puzzle",
          "How it works", "Superlative", "How many", "Map/scale", "Explainer"]
 FMT = [("Scenario", r"^what if|^what would happen|^what happens"), ("How many", r"^how (many|much|long|far|big|fast|hot|cold|deep|high|old)"),
-       ("Versus", r"\bvs\.?\b|versus"), ("Levels", r"\blevels?\b"), ("Paradox", r"paradox"), ("Ranking", r"ranking|ranked|top \d+|\bworst\b|^\d+ "),
+       ("Versus", r"\bvs\.?\b|versus"), ("Timeline", r"\blevels?\b"), ("Paradox", r"paradox"), ("Ranking", r"ranking|ranked|top \d+|\bworst\b|^\d+ "),
        ("Puzzle", r"which .* (first|more|faster)|puzzle|riddle|can you (guess|solve)"),
        ("Explainer", r"explained|the science of|everything you need|\ball the\b"),
        ("How it works", r"^how (do|does|did|is|are|was|to)\b|how .* works?"), ("Why", r"^why\b|\bwhy\b"),
@@ -30,26 +30,26 @@ FMT = [("Scenario", r"^what if|^what would happen|^what happens"), ("How many", 
        ("Map/scale", r"further|bigger than|smaller than|size of|\bmap\b"),
        ("True story", r"\b(1[0-9]{3}|20[0-2][0-9])\b|\bstory\b|history|disaster|incident|what happened"),
        ("Myth test", r"^(is|are|can|could|does|do)\b|myth|actually|really|truth")]
-OFF_BRAND = re.compile(r"soldier|military|bomber|\bwar\b|russia|ukrain|israel|taliban|\bgun\b|shot\b|kill|murder|suicide|\bsex|porn|terror|nazi|trump|biden", re.I)
+OFF_BRAND = re.compile(r"porn|adult content", re.I)  # do not filter serious politics, conflict or history
 STOP = set("what if you your the a an of to how would it take and is are do does why can could in on for with from at".split())
 VOICES = [["own_recording", "Own Hindi voice recording (recommended)"], ["hindi_tts", "Configured Hindi TTS (only if installed and tested)"]]
 VOICE_IDS = [v[0] for v in VOICES]
-LENGTHS = {"short": [30, 40, 50, 60], "long": [300, 420, 540, 720]}       # seconds; the Agent tab and the wizards offer these
-WORDS_PER_SECOND = 2.4                                                       # draft-only Hindi pacing estimate; rendered audio timing is authoritative
+LENGTHS = {"short": [30, 40, 50, 60], "long": [480, 600, 720, 900]}       # seconds
+WORDS_PER_SECOND = 2.4                                                       # rough script planning only; Hindi audio timing is authoritative
 KINDS = ("short", "long")
 
 
 def length_instructions(seconds):
-    """what to tell the hindi-explainer skill when the user picked a duration"""
+    """Create a target-duration brief without assuming English TTS or alignment works for Hindi."""
     seconds = int(seconds)
     words = round(seconds * WORDS_PER_SECOND)
-    head = f"TARGET LENGTH: {seconds} seconds of Hindi narration. The {words}-word estimate is only a rough drafting guide; actual recorded duration and alignment are authoritative."
+    head = (f"TARGET LENGTH: {seconds} seconds of Hindi narration. About {words} words is only a rough drafting estimate; "
+            "the actual recording duration and verified Hindi alignment are authoritative. Use the voiceover skill.")
     if seconds <= 60:
-        return (head + f" Write the script to this length, run build.py voice <project> --target {seconds}, and rewrite until it prints TARGET {seconds}s: OK"
-                " (within 4 seconds). It is a Short, so it renders as 9:16 with the hindi-explainer skill.")
-    return (head + " This is a long video (over 60 seconds): use the longform skill (16:9, 1920x1080, chapters), which runs on the same engine"
-            f" (build.py new <project> --wide). Write the script to this length, run build.py voice <project> --target {seconds}, and rewrite until it"
-            f" prints TARGET {seconds}s: OK. Plan 5 to 9 chapters of 45 to 90 seconds, write chapters.json, and make the video, chapter by chapter.")
+        return (head + " This is a 9:16 Short. Create and listen to the Hindi voice track, verify the aligner supports Hindi, "
+                "then storyboard and render only after the script and claims are checked.")
+    return (head + " This is a 16:9 long-form video. Use the longform skill, 5 to 9 chapters, a research-backed narrative, "
+            "and scene-by-scene code-generated documentary graphics. Do not stretch the runtime or fabricate word timings.")
 
 
 def classify(title):
@@ -278,7 +278,7 @@ Do not browse beyond the topic candidates for idea generation; mark every claim 
 
     # ---------- 3. the form's answers -> the finished video (Short 9:16, long 16:9) ----------
     def slug_for(title):
-        words = [w for w in re.findall(r"[a-z0-9]+", title.lower()) if w not in STOP][:4] or ["video"]
+        words = [w for w in re.findall(r"[a-z0-9]+", title.lower()) if w not in STOP][:4] or ["hindi-topic-" + uuid.uuid4().hex[:6]]
         base = "-".join(words)[:40].strip("-") or "video"
         d, slug, n = Path(cfg()["projects_dir"]), base, 2
         while (d / slug).exists(): slug, n = f"{base}-{n}", n + 1
@@ -321,7 +321,7 @@ What we would draw: {clean(t.get('visual'), 200)}
 Fact to check carefully: {clean(t.get('fact_note'), 200)}
 Inspired by (topic and format only; do not reuse its script or title): "{clean(src.get('title'), 120)}" from {clean(src.get('channel'), 60)}
 {('RESEARCH BRIEF (read it first and follow it; its notes on what to verify and what NOT to claim override your own assumptions): ' + brief) if brief else ''}
-PROJECT NAME: {slug}   (create it with build.py new {slug}; it lands in {c['projects_dir']})
+PROJECT NAME: {slug}\nPYTHON: {c['python']}\nENGINE SCRIPT: {c['engine']}\nPROJECTS DIRECTORY: {c['projects_dir']}\nCreate it with the configured engine: "{c['python']}" "{c['engine']}" new {slug} (add --wide for long-form).
 
 THE USER'S ANSWERS (follow them):
 - {length_instructions(dur)}
@@ -329,7 +329,7 @@ THE USER'S ANSWERS (follow them):
 - Tone: {clean(a.get('tone') or 'serious, clear, composed and engaging', 80)}
 - Visual treatment: use the documentary visual system; no recurring mascot characters. Use visual metaphors only when they clarify a mechanism.
 - Ending: {clean(a.get('ending') or 'a concise evidence-based conclusion that resolves the opening question', 80)}
-- Background music: {'on, and it follows the script: musicMood() follows the narrative tone and evidence (see the skill)' if a.get('music', True) else 'off (pass --no-music to build.py video)'}
+- Background music: {'on, and it follows the script: musicMood() follows the narrative tone and evidence (if supported by the renderer)' if a.get('music', True) else 'off (pass --no-music to build.py video)'}
 - Channel outro: {'appended' if a.get('outro', True) else 'left off (pass --no-outro to build.py video)'}
 - Thumbnail: {thumb_line}.
 - Extra notes: {clean(a.get('notes'), 400) or 'none'}
@@ -346,10 +346,10 @@ The user has approved the topic and settings. Complete the research and script p
 {common}- Structure: {structure}
 
 The user has approved the topic and settings. Complete the research and script package, but stop before rendering if high-impact factual claims remain unresolved, in this order:
-1. build.py new {slug} --wide (it lands in {c['projects_dir']}). The HOOK first, with .claude/skills/hindi-script/SKILL.md: draft five candidate openings, evaluate promise, specificity and accuracy, and record the chosen hook plus rationale in {slug}-hooks.md; then the turn by 0:45, no channel intro and no subscribe pitch. script.json: one sentence per entry, written chapter by chapter, a payoff that calls back to the hook. Calm, precise, evidence-led Hindi narration, with a memorable visual explanation at each chapter turn; no hype words.
+1. "{c['python']}" "{c['engine']}" new {slug} --wide (it lands in {c['projects_dir']}). The HOOK first, with .claude/skills/hindi-script/SKILL.md: draft five candidate openings, evaluate promise, specificity and accuracy, and record the chosen hook plus rationale in {slug}-hooks.md; then the turn by 0:45, no channel intro and no subscribe pitch. script.json: one sentence per entry, written chapter by chapter, a payoff that calls back to the hook. Calm, precise, evidence-led Hindi narration, with a memorable visual explanation at each chapter turn; no hype words.
 2. Fact-check every claim with web searches of primary sources (the paper, the review, the agency page). Hedge what is uncertain, drop what you cannot verify, never invent a number. Write {slug}-sources.md: claim, link, and how far you verified it (full text, abstract only, secondary report).
-3. chapters.json (5 to 9 chapters, [{{"title", "line"}}], titles of 3 to 5 words that promise what the section gives, following the longform skill's chapter rules), then build.py voice {slug} --voice {voice} --speed {speed} --target {dur}; rewrite and re-run until it prints TARGET {dur}s: OK; then build.py chapters {slug} until it prints "valid".
-4. The SCENE AND SOUND PLAN: {slug}-plan.md, one row per chapter with the set and place, time of day and colour, the visual metaphors on screen, props, the music mood and why, the sound or silence beat and the visual analogy (the scenes and the music must change with what the script says: see .claude/skills/longform/references/wide-storytelling.md). Then a cast of different visual metaphors (see "A coherent visual language" in references/style.md) in web/cast.js, then web/shots/ch01.js, ch02.js, ... ONE CHAPTER AT A TIME: write the chapter's shots, render 2 or 3 stills per chapter with build.py stills (read the single stills/sheet.jpg it writes), fix what is wrong, then the next chapter. build.py check must show no [error], no shot over 20 s and no music warning (use setScene() sets and musicMood() moods, at least 4 moods).
+3. chapters.json (5 to 9 chapters with renderer-compatible sentence indices). Use the voiceover skill to create and verify the Hindi audio and its timings. Only run the configured renderer's voice/alignment command if the installed aligner has passed a Hindi smoke test; otherwise use the approved Hindi-capable aligner. Generate valid YouTube chapter timestamps from the real aligned audio.
+4. The SCENE AND SOUND PLAN: {slug}-plan.md, one row per chapter with the set and place, time of day and colour, the visual metaphors on screen, props, the music mood and why, the sound or silence beat and the visual analogy (the scenes and the music must change with what the script says: see .claude/skills/longform/references/wide-storytelling.md). Then a cast of different visual metaphors (see "A coherent visual language" in references/style.md) in web/cast.js, then web/shots/ch01.js, ch02.js, ... ONE CHAPTER AT A TIME: write the chapter's shots, render 2 or 3 stills per chapter with build.py stills (read the single stills/sheet.jpg it writes), fix what is wrong, then the next chapter. build.py check must show no [error], no shot over 20 s and no music warning (use setScene() and musicMood() only if those APIs exist in the installed renderer; otherwise implement equivalent scene and sound changes with supported APIs).
    Burned-in captions: {'ON (set CAP.on = true at the top of cast.js)' if a.get('captions') else 'OFF, the long-form standard: the .srt is uploaded as YouTube captions; put numbers and key words on screen as label shapes'}.
 5. build.py video {slug}{'' if a.get('music', True) else ' --no-music'}{'' if a.get('outro', True) else ' --no-outro'}, then build.py sheet {slug} and look at the sheet once.
 6. {step6}
