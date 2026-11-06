@@ -25,6 +25,12 @@ Flask API (app/server.py)
         +-- YouTube Data API / Analytics API (tools/yt_upload.py)
 ```
 
+## Hosted AI workspace
+
+The `web/` directory contains a separate Next.js application intended for Vercel deployment. It uses a server-side OpenAI Responses API route. Research requests require the built-in web-search tool; the API key is read only from server-side environment variables. A signed HTTP-only session cookie protects the single-owner app.
+
+The cloud app currently exports a portable JSON handoff. It does not access local project folders or invoke local commands. The Flask app below remains the execution environment for Windows processes, the installed renderer, FFmpeg, local media and YouTube credentials. Do not expose the Flask server to the public internet. A future local companion should make outbound authenticated requests to a cloud queue rather than opening an inbound port on the PC.
+
 ## Adapted from Bean Studio
 
 The following infrastructure was carried over from `PratyushK7/bean-studio` and rebased to this repository:
