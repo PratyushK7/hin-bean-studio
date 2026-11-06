@@ -1,9 +1,9 @@
-"""Bean Studio: a local web interface for The Bean With Bad Ideas pipeline.
+"""Hindi Explainer Studio: a local production dashboard for serious Hindi explainers.
 
     start.bat                 (or)    .venv\\Scripts\\python app\\server.py
 
 Serves http://127.0.0.1:<port> (localhost only). Everything it does runs a command from config.json on this
-machine: the line-boil build steps, the YouTube uploader and the Claude Code agent.
+machine: the configured renderer, YouTube uploader and Claude Code agent.
 """
 import datetime as dt, json, os, re, shutil, stat, subprocess, sys, threading, time, uuid, webbrowser
 from pathlib import Path
@@ -32,7 +32,7 @@ DEFAULTS = {
     "analytics_sync_hours": 6,          # 0 = only when you press Sync now
     "topic_category": "serious Hindi-language explainers and documentary storytelling across science, technology, history, economics, psychology, geopolitics and society",
     "topic_channels": [
-        # animated / funny explainers
+        # documentary explainers and research channels
         "TEDEd", "kurzgesagt", "MinuteEarth", "AsapSCIENCE", "SciShow", "Veritasium", "Vox", "JohnnyHarris", "Wendoverproductions", "RealLifeLore", "EconomicsExplained", "ColdFusion", "Fireship", "ThinkSchool", "Soch by Mohak", "Dhruv Rathee", "StudyIQ IAS", "GetsetflySCIENCE", "Nitish Rajput", "LifeNoggin", "WhatIfScienceShow", "TheOdd1sOut", "JaidenAnimations", "OverSimplified", "Psych2go", "ThoughtCafe", "PrimerBlobs", "ZackDFilms", "RyanGeorge", "SciShowKids",
         # science and how things work
         "veritasium", "Vsauce", "Vsauce2", "Vsauce3", "Numberphile", "3blue1brown", "minutephysics", "SmarterEveryDay", "SteveMould", "NileRed", "TheActionLab", "ElectroBOOM", "PBSSpaceTime", "ArvinAsh", "DomainOfScience", "MarkRober", "PracticalEngineering", "colinfurze", "CrashCourse", "SciShowPsych", "SciShowSpace",
@@ -99,7 +99,7 @@ def validate_config(new):
 @app.before_request
 def guard():
     if (request.host or "").split(":")[0].lower() not in ("127.0.0.1", "localhost"):
-        abort(403, "Bean Studio only answers on localhost")            # DNS-rebinding protection
+        abort(403, "Hindi Explainer Studio only answers on localhost")            # DNS-rebinding protection
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         origin = request.headers.get("Origin")
         if origin and (urlparse(origin).hostname or "") not in ("127.0.0.1", "localhost"):
@@ -310,14 +310,22 @@ def run():
     act, name = b.get("action"), b.get("project", "")
     if act == "auth":
         return jsonify(start_job("YouTube sign-in", [c["python"], c["uploader"], "auth"], str(ROOT), unique=True))
-    if act == "spinoffs":      # the yt-shorts skill on a finished long video: which moments survive alone, with new scored first lines
+    if act == "voice":
+        # Never let the renderer silently fall back to its default (often English) TTS voice.
+        p = proj_dir(name)
+        audio = p / "audio" / "hindi-voice.wav"
+        if not audio.is_file():
+            abort(400, f"Record/import Hindi narration to {audio} first. Check Hindi alignment support before using the Voice action.")
+        cmd = [c["python"], c["engine"], "voice", name, "--file", str(audio)]
+        return jsonify(start_job(f"voice · {name}", cmd, str(ROOT), unique=True))
+    if act == "spinoffs":      # identify self-contained Hindi Short adaptations from a finished long video
         p = proj_dir(name)
         if not (p / f"{name}.srt").exists(): abort(400, "this video has no .srt yet: build the video first")
-        prompt = (f"Use the yt-shorts skill (read ~/.claude/skills/yt-shorts/SKILL.md) on the finished long video {name}. The transcript is {p / (name + '.srt')}; the "
+        prompt = (f"Use the repo-local .claude/skills/shorts/SKILL.md and .claude/skills/hindi-script/SKILL.md on the finished long video {name}. The transcript is {p / (name + '.srt')}; the "
                   f"chapters are {p / (name + '-chapters.txt')} and the script is {p / 'script.json'}. Find the 5 best spans of 20 to 55 seconds that survive without the video around them "
                   "(a complete opening thought, a turn, an ending line). For each of the top 5 write: the timecodes, a NEW first line (score five options with "
                   "~/.claude/skills/yt-script/hookscore.py and keep the best, showing the score), different on-screen text for the first two seconds, a loop point, and the title. "
-                  "These are animated cartoons, so they cannot be cropped from the 16:9 video: say which beans and set each Short would need, to be remade vertically with the line-boil skill. "
+                  "Do not crop the 16:9 animation into a vertical frame. Identify the visual elements and scenes that must be redesigned in 9:16 using the documentary visual system. "
                   f"Write it all to {p / (name + '-shorts.md')} and finish by printing the ranked list. Do not make any video and do not touch other projects.")
         return jsonify(start_agent(f"spinoffs · {name}", prompt, c.get("options_model") or None, "feed"))
     if act not in ACTIONS or not SLUG.match(name or ""): abort(400, "bad action or project")
@@ -447,11 +455,11 @@ def main():
             stale = running["started"] < code_stamp() - 1
         except Exception:
             stale = True
-        print(f"Bean Studio is already running at {url}.")
+        print(f"Hindi Explainer Studio is already running at {url}.")
         if stale: print("That copy is OUT OF DATE (it started before the latest code). Close its console window, then run start.bat again.")
         if c.get("open_browser"): webbrowser.open(url)
         return
-    print(f"Bean Studio on {url}  (Ctrl+C to stop)")
+    print(f"Hindi Explainer Studio on {url}  (Ctrl+C to stop)")
     if _cfg["problem"]: print("WARNING:", _cfg["problem"])
     if c.get("open_browser"): threading.Timer(1.0, lambda: webbrowser.open(url)).start()
     app.run(host="127.0.0.1", port=c["port"], debug=False, threaded=True)
