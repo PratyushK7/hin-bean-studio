@@ -251,7 +251,7 @@ def register(app, ROOT, cfg, start_job, JOBS, start_agent=None):
 Read {cfile}. "candidates" are {what[1]} from other channels that beat their own channel's median views by the "multiple" shown. "already_made_titles" are topics we have made or planned: never repeat or closely echo them.
 
 Pick THREE different candidates and adapt each into an ORIGINAL topic for our channel. Borrow the topic area and the video format only: never copy a title, a script or a distinctive phrase. Rules:
-- 3 different video types (from {TYPES}); at most one speculative scenario, and only when counterfactual reasoning is central to the subject. Title in the channel voice: a plain question or claim, under 60 characters, no hype words, no all caps.
+- 3 different video types (from {TYPES}); at most one speculative scenario, and only when counterfactual reasoning is central to the subject. Write the title and idea promise in natural Hindi (Devanagari); retain a familiar English technical term when clearer. Title in the channel voice: a plain question or claim, under 60 characters, no hype words, no all caps.
 - Every topic must be explainable through an intentional visual system (maps, data, timelines, diagrams, code-generated animation, real visual references), without relying on mascots or decorative motion, and {what[2]}.
 - Vary the subject areas across the three. Prefer topics with high public relevance, strong evidence and a visual model that improves understanding.
 - Do not force sensational, conspiratorial or outrage-driven framing onto any topic.
