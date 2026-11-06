@@ -48,3 +48,7 @@ projects/*/render/stills/
 projects/*/voice/.venv/
 projects/*/voice/models/
 projects/*/voice/cache/
+
+# VoxCPM2 local CPU environment and model cache
+projects/*/voice/.venv-voxcpm2/
+projects/*/voice/voxcpm2-models/
