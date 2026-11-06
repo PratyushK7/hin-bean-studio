@@ -37,3 +37,8 @@ jobs:
         run: |
           npm run preview -- --out ./stills
           python -c "from pathlib import Path; p=list(Path('stills').glob('scene-*.png')); print(f'{len(p)} scene previews'); assert len(p)==16"
+      - name: Smoke-test video and audio mux
+        run: |
+          ffmpeg -y -hide_banner -loglevel error -f lavfi -i sine=frequency=440:duration=2 -c:a pcm_s16le /tmp/renderer-test.wav
+          node render.mjs --audio /tmp/renderer-test.wav --out /tmp/renderer-test.mp4 --fps 12
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of csv=p=0 /tmp/renderer-test.mp4 | grep -q "h264,1920,1080"
