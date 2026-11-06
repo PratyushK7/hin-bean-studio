@@ -25,6 +25,7 @@ def parse_args():
     p.add_argument("--voice", choices=VOICE_IDS, default="hf_alpha")
     p.add_argument("--preview-all", action="store_true", help="Audition all four Hindi voices.")
     p.add_argument("--limit", type=int, default=None, help="Synthesize only the first N sentences.")
+    p.add_argument("--paragraph", action="store_true", help="Join a limited excerpt into one paragraph for a fair TTS comparison.")
     p.add_argument("--speed", type=float, default=1.0)
     p.add_argument("--pause", type=float, default=0.18)
     p.add_argument("--question-pause", type=float, default=0.30)
@@ -132,6 +133,8 @@ def main():
     if args.pause < 0 or args.question_pause < 0:
         raise ValueError("Pause durations cannot be negative.")
     lines = load_script()
+    if args.paragraph and args.limit is None:
+        raise ValueError("--paragraph is intended for short auditions; provide --limit N.")
 
     if args.preview_all:
         count = args.limit or 4
@@ -146,6 +149,8 @@ def main():
         if not chosen_lines:
             raise ValueError("--limit must be positive.")
         voices = [args.voice]
+        if args.paragraph:
+            chosen_lines = [" ".join(chosen_lines)]
 
     model = project_path(args.model)
     cache = VOICE_DIR / "cache"
@@ -164,7 +169,8 @@ def main():
             if args.preview_all:
                 destination = AUDIO / "previews" / (voice + ".wav")
             elif len(chosen_lines) < len(lines):
-                destination = AUDIO / "previews" / (voice + "-preview.wav")
+                suffix = "-paragraph-preview.wav" if args.paragraph else "-preview.wav"
+                destination = AUDIO / "previews" / (voice + suffix)
             elif args.out:
                 destination = project_path(args.out)
             else:
