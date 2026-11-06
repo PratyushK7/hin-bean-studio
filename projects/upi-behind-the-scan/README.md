@@ -18,7 +18,9 @@ UPI ek app ya simple digital wallet nahi hai. Common bank-linked UPI payment mei
 - [x] Storyboard and visual plan
 - [x] Thumbnail and YouTube metadata
 - [ ] Script approval
-- [ ] Human voice recording at `audio/hindi-voice.wav`
+- [x] Local Hindi Kokoro TTS generator and Devanagari pronunciation script
+- [ ] Listen to TTS voice previews and select a narration voice
+- [ ] Generate and quality-check `audio/hindi-voice.wav`
 - [ ] Hindi/Hinglish font and alignment smoke test
 - [x] Standalone 16-scene Canvas implementation (local renderer)
 - [ ] Install Playwright/Chromium locally and inspect the 16-scene PNG preview
@@ -35,4 +37,17 @@ The repo's original line-boil renderer is a configurable local dependency, not b
 
 ## Local renderer
 
-See [render/README.md](render/README.md). It contains the 16 scene implementations, a local preview command and the FFmpeg render command. Record your own Hinglish narration at audio/hindi-voice.wav before creating the final video.
+See [render/README.md](render/README.md). It contains the 16 scene implementations, a local preview command and the FFmpeg render command. Generate local Hindi narration with voice/setup.bat and voice/generate_audio.py, or record your own Hinglish narration at audio/hindi-voice.wav. The TTS generator writes sentence and optional word timing sidecars; the renderer uses sentence timings when present.
+
+
+## Local audio generation
+
+This project follows Bean Studio's local-first narration pattern using Google MediaPipe Text-to-Speech with Kokoro-82M Hindi voices. It does not call an external TTS API.
+
+From the project voice folder on Windows:
+
+    setup.bat
+    .venv\Scripts\python.exe generate_audio.py --preview-all --limit 4
+    .venv\Scripts\python.exe generate_audio.py --voice hf_alpha
+
+The setup downloads the CPU/GPU Kokoro model once (about 295 MB). Listen to the four short voice samples, choose one, then generate the full WAV. See voice/README.md for the full procedure.
