@@ -54,19 +54,15 @@ Optional settings:
 
 The default is 24 fps, 1920×1080, H.264 video with AAC narration. Frames are captured from the local browser and streamed to FFmpeg; the renderer does not create thousands of intermediate image files.
 
-## Existing local dashboard integration
+## Optional adapter
 
-You can run the adapter directly:
+The local Python adapter supports the same Check, Stills and Video commands:
 
     python build.py check upi-behind-the-scan
     python build.py stills upi-behind-the-scan
     python build.py video upi-behind-the-scan
 
-Or set the local dashboard's Engine path to this file:
-
-    <repo>\projects\upi-behind-the-scan\render\build.py
-
-The dashboard's Check and Video actions will then use this project's Canvas renderer. This Engine setting is global in the existing Flask app, so other projects without a render/ scene package will not use this adapter correctly. For that reason, running the adapter directly is the safer option until the dashboard supports per-project renderers.
+Direct commands above are recommended. The existing Flask dashboard has a global Engine setting, not a per-project renderer selector. Its Video action also has a separate Hindi-alignment readiness gate. Do not change the global Engine setting just for this one project unless you understand that other projects will be routed through this adapter. The direct command does not change any existing dashboard setting.
 
 ## Timing and current limitations
 
