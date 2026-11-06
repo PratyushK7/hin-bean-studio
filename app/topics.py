@@ -3,7 +3,7 @@
 1. Finds what is working on other channels in the same category: public listings (yt-dlp, no login), each video scored as a
    multiple of its own channel's median views, so a big channel's normal day doesn't look like a hit. Shorts and long videos
    have separate pools and separate medians.
-2. "Get 5 ideas": a sample of the best outliers goes to the agent, which adapts five of them into ORIGINAL topics for this
+2. "Get 3 ideas": a sample of the best outliers goes to the agent, which adapts five of them into ORIGINAL topics for this
    channel (topic and format borrowed, never the script or title). "Re-roll" samples a fresh set, skipping sources already shown.
    data/picks.json holds hand-researched topics (with a brief file) that show above the generated ones.
 3. A chosen topic + the answers from the form become one agent job. A Short is made with the hindi-explainer skill (9:16); a long video with
