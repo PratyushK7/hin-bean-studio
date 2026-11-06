@@ -118,15 +118,17 @@ The script fixes the seed and uses a restrained documentary-style voice descript
 
 ### Compare with Kokoro
 
-Generate the same eight opening lines with the existing Kokoro voice:
+Generate the same eight opening lines with the existing Kokoro voice, as one paragraph:
 
-    .venv\Scripts\python.exe generate_audio.py --voice hf_alpha --limit 8
+    .venv\Scripts\python.exe generate_audio.py --voice hf_alpha --limit 8 --paragraph
 
-Kokoro output:
+Kokoro paragraph output:
 
-    projects/upi-behind-the-scan/audio/previews/hf_alpha-preview.wav
+    projects/upi-behind-the-scan/audio/previews/hf_alpha-paragraph-preview.wav
 
 VoxCPM2 outputs are under audio/previews/voxcpm2/.
+
+For an additional comparison, generate Kokoro with its original sentence-by-sentence behavior by omitting --paragraph. That output is hf_alpha-preview.wav. Comparing the two Kokoro samples helps show whether sentence-by-sentence chunking is contributing to the less-natural delivery.
 
 ### Important limitations
 
