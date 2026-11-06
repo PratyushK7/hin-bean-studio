@@ -22,7 +22,7 @@ DEFAULTS = {
     "projects_dir": str(ROOT / "projects"),
     "planner": str(ROOT / "data" / "planner.xlsx"),
     "python": sys.executable,   # the .venv python: has the uploader libs; build.py re-runs itself under the kit
-    "engine": str(ROOT / "engine" / "build.py"),
+    "engine": str(Path.home() / ".claude" / "skills" / "line-boil" / "engine" / "build.py"),
     "uploader": str(ROOT / "tools" / "yt_upload.py"),
     "agent_command": ["claude", "-p", "--permission-mode", "acceptEdits"],
     "agent_cwd": str(ROOT),
@@ -82,7 +82,7 @@ def validate_config(new):
     if not isinstance(new, dict): return ["settings must be a JSON object { ... }"]
     kinds = {"port": int, "open_browser": bool, "projects_dir": str, "planner": str, "python": str, "engine": str, "uploader": str,
              "agent_command": list, "agent_cwd": str, "slots": dict, "channel": str, "hide_projects": list,
-             "analytics_sync_hours": (int, float), "topic_category": str, "topic_channels": list, "options_model": str, "video_model": str, "video_model_short": str, "video_model_long": str, "thumbnail_model": str}
+             "analytics_sync_hours": (int, float), "topic_category": str, "topic_channels": list, "options_model": str, "video_model": str, "video_model_short": str, "video_model_long": str, "thumbnail_model": str, "thumbnail_model_short": str}
     errs = [f'"{k}" has the wrong type' for k, t in kinds.items() if k in new and (not isinstance(new[k], t) or (t is not bool and isinstance(new[k], bool)))]
     if errs: return errs
     if "agent_command" in new and (not new["agent_command"] or not all(isinstance(x, str) for x in new["agent_command"])):
