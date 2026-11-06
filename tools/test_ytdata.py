@@ -7,10 +7,10 @@ sys.path.insert(0, str(ROOT / "app"))
 import ytdata
 
 PUBLISHED = {   # id -> (title, publishedAt UTC, duration)
-    "v1": ("Why Does Caffeine Stay in Your Body?", "2026-11-03T06:30:00Z", "PT44S"),    # 12:00 IST  -> slot A
-    "v2": ("How GPS Finds Your Exact Location", "2026-11-04T01:00:00Z", "PT44S"),   # 06:30 IST -> slot B
+    "v1": ("Why Does Caffeine Stay in Your Body?", "2026-11-03T13:30:00Z", "PT44S"),    # 12:00 IST  -> slot A
+    "v2": ("How GPS Finds Your Exact Location", "2026-11-04T06:30:00Z", "PT44S"),   # 06:30 IST -> slot B
     "v3": ("A scheduled one", "2026-11-09T01:00:00Z", "PT40S"),
-    "v4": ("How Satellites Map the Earth", "2026-11-08T16:00:00Z", "PT7M12S"),   # long
+    "v4": ("How Satellites Map the Earth", "2026-11-08T15:00:00Z", "PT7M12S"),   # long
 }
 
 
@@ -52,7 +52,7 @@ def main():
     import googleapiclient.discovery as d
     d.build = lambda name, ver, **kw: Fake(name)
     ytdata.credentials = lambda ROOT: object()
-    cfg = {"projects_dir": str(ROOT / "projects"), "planner": str(ROOT / "data/planner.xlsx"), "slots": {"A": "12:00", "B": "06:30", "Long": "21:30"}}
+    cfg = {"projects_dir": str(ROOT / "projects"), "planner": str(ROOT / "data/planner.xlsx"), "slots": {"A": "19:00", "B": "12:00", "Long": "20:30"}}
     existing = [{"title": "Why Does Caffeine Stay in Your Body?", "type": "Why", "notes": "mine", "slot": None}]
     rows, info = ytdata.sync(ROOT, cfg, existing)
     by = {r["id"]: r for r in rows}
@@ -67,9 +67,9 @@ def main():
     assert by["v1"]["retention"][0][0] <= 5 and len(by["v1"]["retention"]) >= 8
     print("sync ok:", {k: by["v1"][k] for k in ("slot", "type", "views", "engaged_pct", "drop_s", "geo", "posted")})
     # a second sync with the first result keeps manual edits and doesn't duplicate rows
-    by["v2"]["type"] = "Levels"
+    by["v2"]["type"] = "Timeline"
     rows2, _ = ytdata.sync(ROOT, cfg, list(by.values()))
-    assert len(rows2) == 3 and {r["id"]: r for r in rows2}["v2"]["type"] == "Levels"
+    assert len(rows2) == 3 and {r["id"]: r for r in rows2}["v2"]["type"] == "Timeline"
     # incremental details: an old video that was checked today is not queried again; a new one still is
     old = {r["id"]: r for r in rows2}
     ytdata.FRESH_DAYS = -1                                   # the fake videos are days old; treat them as "old" here
