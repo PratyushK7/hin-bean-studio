@@ -52,6 +52,7 @@ DEFAULTS = {
     "video_model_short": "",          # empty = the session default
     "video_model_long": "",           # empty = the session default
     "agent_window": False,              # True: every video the agent makes opens in its own visible Claude window
+    "hindi_alignment_ready": False,      # set True only after a Hindi voice + aligner smoke test passes
 }
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,60}$")
 HHMM = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
@@ -82,7 +83,7 @@ def validate_config(new):
     if not isinstance(new, dict): return ["settings must be a JSON object { ... }"]
     kinds = {"port": int, "open_browser": bool, "projects_dir": str, "planner": str, "python": str, "engine": str, "uploader": str,
              "agent_command": list, "agent_cwd": str, "slots": dict, "channel": str, "hide_projects": list,
-             "analytics_sync_hours": (int, float), "topic_category": str, "topic_channels": list, "options_model": str, "video_model": str, "video_model_short": str, "video_model_long": str, "thumbnail_model": str, "thumbnail_model_short": str}
+             "analytics_sync_hours": (int, float), "topic_category": str, "topic_channels": list, "options_model": str, "video_model": str, "video_model_short": str, "video_model_long": str, "thumbnail_model": str, "thumbnail_model_short": str, "hindi_alignment_ready": bool}
     errs = [f'"{k}" has the wrong type' for k, t in kinds.items() if k in new and (not isinstance(new[k], t) or (t is not bool and isinstance(new[k], bool)))]
     if errs: return errs
     if "agent_command" in new and (not new["agent_command"] or not all(isinstance(x, str) for x in new["agent_command"])):
@@ -315,7 +316,9 @@ def run():
         p = proj_dir(name)
         audio = p / "audio" / "hindi-voice.wav"
         if not audio.is_file():
-            abort(400, f"Record/import Hindi narration to {audio} first. Check Hindi alignment support before using the Voice action.")
+            abort(400, f"Record/import Hindi narration to {audio} first.")
+        if not c.get("hindi_alignment_ready", False):
+            abort(400, "Hindi alignment has not been verified. Run the Hindi voice/alignment smoke test in engine/README.md, then set hindi_alignment_ready=true in Settings.")
         cmd = [c["python"], c["engine"], "voice", name, "--file", str(audio)]
         return jsonify(start_job(f"voice · {name}", cmd, str(ROOT), unique=True))
     if act == "spinoffs":      # identify self-contained Hindi Short adaptations from a finished long video
