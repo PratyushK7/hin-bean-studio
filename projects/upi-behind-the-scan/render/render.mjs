@@ -13,6 +13,7 @@ const INDEX_FILE = path.join(RENDER_DIR, "index.html");
 const SCENE_FILE = path.join(RENDER_DIR, "scene.js");
 const SCRIPT_FILE = path.join(PROJECT_DIR, "script.json");
 const STORYBOARD_FILE = path.join(PROJECT_DIR, "storyboard.json");
+const SENTENCE_TIMINGS_FILE = path.join(PROJECT_DIR, "audio", "sentences.json");
 
 function argsOf(argv) {
   const out = { fps: 24, quality: 92, stills: false, times: null, audio: null, output: null };
@@ -92,10 +93,45 @@ async function loadPlan() {
   });
   const missing = script.map((_,i)=>i).filter(i=>!covered.has(i));
   if (missing.length) throw new Error("Storyboard does not cover script sentence indices: " + missing.join(", "));
-  return { script, scenes, totalWords: scenes.reduce((sum,s)=>sum+s.words,0) };
+
+  let sentenceTimings = null;
+  try {
+    const rawTimings = await readFile(SENTENCE_TIMINGS_FILE, "utf8");
+    const parsed = JSON.parse(rawTimings);
+    if (!Array.isArray(parsed) || parsed.length !== script.length) {
+      throw new Error("audio/sentences.json must contain one row per script sentence.");
+    }
+    sentenceTimings = parsed.map((row, index) => {
+      if (row.line !== index || !Number.isFinite(row.s) || !Number.isFinite(row.e) || row.e <= row.s) {
+        throw new Error("Invalid sentence timing row at script line " + index);
+      }
+      if (index > 0 && row.s < parsed[index - 1].e) {
+        throw new Error("Overlapping sentence timings at script line " + index);
+      }
+      return row;
+    });
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  return { script, scenes, totalWords: scenes.reduce((sum,s)=>sum+s.words,0), sentenceTimings };
 }
 
-function timelineFor(scenes, totalSeconds) {
+function timelineFor(scenes, totalSeconds, sentenceTimings) {
+  if (sentenceTimings) {
+    return scenes.map((scene, index) => {
+      const [firstLine, lastLine] = scene.script_lines;
+      const start = sentenceTimings[firstLine].s;
+      const nextLine = sentenceTimings[lastLine + 1];
+      const end = index === scenes.length - 1
+        ? totalSeconds
+        : (nextLine ? nextLine.s : sentenceTimings[lastLine].e);
+      const duration = end - start;
+      if (!Number.isFinite(duration) || duration <= 0) {
+        throw new Error("Invalid synthesized timeline for storyboard scene " + scene.id);
+      }
+      return { ...scene, start, end, duration };
+    });
+  }
   let cursor = 0;
   const totalWords = scenes.reduce((sum,s)=>sum+s.words,0);
   return scenes.map((scene, index) => {
@@ -179,7 +215,7 @@ async function renderVideo(options, plan) {
   if (!Number.isFinite(options.quality) || options.quality < 60 || options.quality > 100) throw new Error("--quality must be between 60 and 100.");
   const output = options.output ? resolveRenderPath(options.output) : path.join(PROJECT_DIR,path.basename(PROJECT_DIR)+".mp4");
   await mkdir(path.dirname(output), { recursive:true });
-  const timeline = timelineFor(plan.scenes,duration);
+  const timeline = timelineFor(plan.scenes,duration,plan.sentenceTimings);
   const fpsCount = Math.ceil(duration*fps);
   const ffmpegArgs = [
     "-y","-hide_banner","-loglevel","warning",
@@ -191,7 +227,7 @@ async function renderVideo(options, plan) {
     "-c:a","aac","-b:a","192k","-movflags","+faststart",output
   ];
   console.log("Voice duration : " + duration.toFixed(2) + " seconds");
-  console.log("Video timeline : 16 scenes, weighted by script sentence word counts");
+  console.log("Video timeline : " + (plan.sentenceTimings ? "16 scenes, using synthesized sentence timings" : "16 scenes, estimated from script word counts"));
   console.log("Frame rate     : " + fps + " fps");
   console.log("Output         : " + output);
   const ffmpeg = spawn("ffmpeg",ffmpegArgs,{stdio:["pipe","ignore","pipe"]});
