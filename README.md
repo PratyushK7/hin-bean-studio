@@ -35,7 +35,7 @@ A local-first production desk for a serious Hindi explainer channel. It combines
 3. Run `python tools/build_planner.py` once to create a clean planner workbook.
 4. Set the paths and posting slots in Settings. The default renderer path points to the existing Bean Studio line-boil engine; change it if you install the engine elsewhere.
 5. Add OAuth files under `tools/.secrets/` and follow [tools/yt_upload.md](tools/yt_upload.md).
-6. Start with `.claude/skills/hindi-explainer/SKILL.md`. For a new video, research first, approve the script and storyboard, then render.
+6. Start with `.claude/skills/hindi-explainer/SKILL.md`. For a new video, research first, approve the Hindi script and storyboard, then record your narration at `projects/<slug>/audio/hindi-voice.wav`. The Voice action will not silently use the renderer's default English TTS. Only then render.
 
 ## Project layout
 
