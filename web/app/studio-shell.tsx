@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 
-type Operation = "ideas" | "research" | "script" | "storyboard" | "package" | "revise";
+type Operation = "ideas" | "research" | "script" | "storyboard" | "visual_code" | "package" | "revise";
 
 const tasks: { id: Operation; title: string; description: string; label: string }[] = [
   { id: "ideas", title: "Find the angle", description: "Turn a broad subject into a strong explainer concept.", label: "IDEAS" },
   { id: "research", title: "Research brief", description: "Search the web and build a cited evidence brief.", label: "RESEARCH" },
   { id: "script", title: "Write the script", description: "Build a narration-ready documentary script.", label: "SCRIPT" },
-  { id: "storyboard", title: "Visual storyboard", description: "Plan diagrams, animation, motion and scenes.", label: "VISUALS" },
+  { id: "storyboard", title: "Visual storyboard", description: "Plan diagrams, animation, motion and scenes.", label: "VISUALS" },\n  { id: "visual_code", title: "Generate motion code", description: "Create a self-contained HTML/SVG animation for local rendering.", label: "CODE" },
   { id: "package", title: "YouTube package", description: "Titles, thumbnail concepts, description and chapters.", label: "PUBLISH" },
   { id: "revise", title: "Revise material", description: "Improve existing writing without losing accuracy.", label: "REVISE" },
 ];
@@ -152,8 +152,8 @@ export default function StudioShell() {
           </div>
 
           <section className="output-card card">
-            <div className="section-head"><div><p className="eyebrow">03 / OUTPUT</p><h2>{result ? "Your working draft" : "The next useful thing starts here"}</h2></div>{result && <div className="output-actions"><button className="secondary-button" onClick={copyResult}>{copied ? "Copied" : "Copy"}</button><button className="secondary-button export" onClick={downloadHandoff}>Export handoff ↓</button></div>}</div>
-            {result ? <><div className="result-meta"><span>GENERATED WITH {model || "OPENAI"}</span><span>{selected.label} · {language}</span></div><pre className="result-text">{result}</pre></> : <div className="empty-output"><div className="empty-icon">✳</div><div><b>Waiting for your first generation</b><p>Choose a workflow, describe the topic and run GPT. Research tasks use web search and must include source URLs.</p></div></div>}
+            <div className="section-head"><div><p className="eyebrow">03 / OUTPUT</p><h2>{result ? "Your working draft" : "The next useful thing starts here"}</h2></div>{result && <div className="output-actions"><button className="secondary-button" onClick={copyResult}>{copied ? "Copied" : "Copy"}</button><button className="secondary-button export" onClick={downloadHandoff}>{operation === "visual_code" ? "Download scene.html ↓" : "Export handoff ↓"}</button></div>}</div>
+            {result ? <><div className="result-meta"><span>GENERATED WITH {model || "OPENAI"}</span><span>{selected.label} · {language}</span></div><pre className="result-text">{result}</pre></> : <div className="empty-output"><div className="empty-icon">✳</div><div><b>Waiting for your first generation</b><p>Choose a workflow, describe the topic and run GPT. Research tasks use web search and must include source URLs. Motion code is downloaded as a standalone HTML file; inspect it before running locally.</p></div></div>}
           </section>
           <footer className="page-footer"><span>HINDI EXPLAINER STUDIO</span><span>THINK WITH CARE. MAKE IT LOCALLY.</span></footer>
         </div>
