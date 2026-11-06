@@ -1,0 +1,39 @@
+name: UPI local renderer checks
+
+on:
+  push:
+    paths:
+      - "projects/upi-behind-the-scan/**"
+      - ".github/workflows/upi-render-checks.yml"
+  pull_request:
+    paths:
+      - "projects/upi-behind-the-scan/**"
+      - ".github/workflows/upi-render-checks.yml"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/upi-behind-the-scan/render
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Node dependencies
+        run: npm install
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check JavaScript and Python syntax
+        run: |
+          node --check scene.js
+          node --check render.mjs
+          python -m py_compile build.py
+      - name: Render all 16 scene previews
+        run: |
+          npm run preview -- --out ./stills
+          python -c "from pathlib import Path; p=list(Path('stills').glob('scene-*.png')); print(f'{len(p)} scene previews'); assert len(p)==16"
