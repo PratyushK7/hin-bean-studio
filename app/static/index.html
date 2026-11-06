@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hindi Explainer Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f5f3ed; --ink:#17212b; --red:#d65a42; --blue:#244f73; --yel:#d7ad55; --soft:#f1eadb; --mute:#6b6b6b; --ok:#c9e8c9; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Inter, system-ui, sans-serif; background: var(--paper); color: var(--ink); }
+  header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:3px solid var(--ink); background: var(--blue); color:#fff; }
+  header h1 { margin:0; font-size:20px; letter-spacing:.3px; }
+  header h1 span { color: var(--yel); }
+  nav { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+  nav button { font:inherit; font-weight:600; border:2px solid var(--ink); background:var(--paper); color:var(--ink); padding:6px 14px; border-radius:999px; cursor:pointer; box-shadow:2px 2px 0 var(--ink); }
+  nav button.on { background: var(--yel); }
+  main { padding: 20px 24px; max-width: 1280px; margin: 0 auto; }
+  .tab { display:none; } .tab.on { display:block; }
+  .card { background:#fff; border:2px solid var(--ink); border-radius:14px; padding:14px; box-shadow:3px 3px 0 var(--ink); }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px; }
+  .proj { cursor:pointer; transition: transform .08s; } .proj:hover { transform: translate(-1px,-1px); }
+  .proj img { width:100%; aspect-ratio: 9/16; object-fit: cover; border-radius:8px; border:2px solid var(--ink); background: var(--soft); display:block; }
+  .proj .ph { width:100%; aspect-ratio:9/16; border-radius:8px; border:2px dashed var(--mute); display:grid; place-items:center; color:var(--mute); font-size:13px; }
+  .proj h3 { font-size:14px; margin:10px 0 4px; line-height:1.3; }
+  .slug { font-size:12px; color:var(--mute); }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+  .chip { font-size:11px; padding:2px 8px; border-radius:999px; border:1.5px solid var(--ink); background: var(--soft); }
+  .chip.y { background: var(--ok); } .chip.n { background:#fff; color:var(--mute); border-color:#bbb; }
+  .badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; background:var(--red); color:#fff; }
+  .badge.ok { background:#2f8f3a; } .badge.up { background: var(--blue); }
+  button.act { font:inherit; font-weight:600; font-size:13px; border:2px solid var(--ink); background:var(--yel); padding:6px 12px; border-radius:10px; cursor:pointer; box-shadow:2px 2px 0 var(--ink); }
+  button.act.sec { background:#fff; } button.act.red { background: var(--red); color:#fff; } button.act.blue { background: var(--blue); color:#fff; }
+  button.act:active { transform: translate(1px,1px); box-shadow:1px 1px 0 var(--ink); }
+  button:disabled { opacity:.5; cursor: default; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  textarea, input, select { font: inherit; font-size:13px; border:2px solid var(--ink); border-radius:10px; padding:8px 10px; background:#fff; color:var(--ink); }
+  textarea { width:100%; resize: vertical; font-family: ui-monospace, Consolas, monospace; }
+  .detail { display:grid; grid-template-columns: 300px 1fr; gap:20px; }
+  .detail video, .detail img.thumb { width:100%; border-radius:10px; border:2px solid var(--ink); background:#000; display:block; }
+  h2 { font-size:18px; margin: 0 0 12px; } h4 { margin: 16px 0 8px; font-size:14px; }
+  .log { background: var(--ink); color: #eee; font: 12px/1.45 ui-monospace, Consolas, monospace; padding:12px; border-radius:10px; height: 300px; overflow:auto; white-space: pre-wrap; }
+  table { width:100%; border-collapse: collapse; font-size:13px; background:#fff; }
+  th, td { text-align:left; padding:7px 8px; border-bottom:1px solid #e4dccb; vertical-align: top; }
+  th { background: var(--blue); color:#fff; position: sticky; top:0; }
+  tr.Long td { background:#ffe2e3; font-weight:600; } tr.today td:first-child { border-left:5px solid var(--yel); }
+  .st-Posted { color:#2f8f3a; font-weight:700; } .st-Ready, .st-Scheduled { color: var(--blue); font-weight:700; }
+  .muted { color: var(--mute); font-size:12px; }
+  .jobs { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; max-height:160px; overflow:auto; }
+  .job { font-size:12px; padding:6px 10px; border:1.5px solid var(--ink); border-radius:8px; background:#fff; cursor:pointer; display:flex; justify-content:space-between; }
+  .job.sel { background: var(--yel); }
+  .quick button { margin: 0 6px 6px 0; }
+  .back { cursor:pointer; color: var(--blue); font-weight:600; font-size:13px; margin-bottom:12px; display:inline-block; }
+  @media (max-width: 800px) { .detail { grid-template-columns: 1fr; } header { flex-wrap: wrap; } main { padding: 16px; } }
+  .modal { position:fixed; inset:0; background:rgba(28,28,28,.55); display:none; align-items:flex-start; justify-content:center; overflow:auto; padding:30px 16px; z-index:50; }
+  .modal.on { display:flex; }
+  .modal .box { background:var(--paper); border:3px solid var(--ink); border-radius:16px; box-shadow:5px 5px 0 var(--ink); padding:20px; width:min(640px,100%); }
+  .modal label { display:block; font-weight:600; font-size:13px; margin:12px 0 4px; }
+  .modal select, .modal input[type=text], .modal textarea { width:100%; }
+  .opt { cursor:pointer; position:relative; } .opt:hover { transform: translate(-1px,-1px); }
+  .opt h3 { margin:6px 0 6px; font-size:16px; line-height:1.3; }
+  .opt .n { position:absolute; top:10px; right:12px; font-weight:700; color:var(--mute); }
+  .risk-low { background:var(--ok); } .risk-medium { background:#ffe9a8; } .risk-high { background:#ffd1d2; }
+  .spin { display:inline-block; animation: sp 1s linear infinite; } @keyframes sp { to { transform: rotate(360deg); } }
+  .stt { font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; color:#fff; display:inline-block; }
+  .stt.live { background:#2f8f3a; } .stt.scheduled { background:var(--blue); } .stt.private { background:#8a8a8a; } .stt.unlisted { background:#8a8a8a; } .stt.planned { background:var(--yel); color:var(--ink); }
+  button.del { font:inherit; font-size:12px; border:2px solid var(--ink); background:#fff; color:#c0262d; padding:3px 9px; border-radius:8px; cursor:pointer; }
+  button.del:hover { background:#c0262d; color:#fff; }
+  .making { border-style:dashed; background:#fffbe8; }
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(90px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:12px; font-size:13px; max-width:min(560px,92vw); opacity:0; transition:.25s; z-index:90; pointer-events:none; }
+  #toast.on { opacity:1; transform:translateX(-50%); }
+  .banner { background:var(--yel); border-bottom:3px solid var(--ink); padding:8px 24px; font-weight:600; font-size:13px; }
+  .seg { display:inline-flex; border:2px solid var(--ink); border-radius:999px; overflow:hidden; box-shadow:2px 2px 0 var(--ink); }
+  .seg button { font:inherit; font-weight:600; border:0; padding:6px 16px; background:#fff; cursor:pointer; }
+  .seg button.on { background:var(--yel); }
+  .opt.pick { background:#fffbe8; border-color:var(--red); }
+  .opt ul { margin:6px 0 0 16px; padding:0; font-size:12px; color:var(--mute); }
+  .proj img.wide, .proj .ph.wide { aspect-ratio:16/9; }
+  .detail img.thumb.wide, .detail video.wide { aspect-ratio:16/9; }
+  .bar { height:12px; border:2px solid var(--ink); border-radius:999px; background:#fff; overflow:hidden; margin:10px 0 6px; }
+  .bar i { display:block; height:100%; background:var(--blue); transition:width .6s; }
+  .now { font-size:12px; color:var(--mute); min-height:34px; line-height:1.35; word-break:break-word; }
+</style>
+</head>
+<body>
+<div class="banner" id="stale" style="display:none">⚠ The studio's code changed after it started. Close its console window and run <code>start.bat</code> again to use the new version.</div>
+<div id="toast"></div>
+<header>
+  <h1>🫘 Bean <span>Studio</span></h1>
+  <nav>
+    <button data-tab="projects" class="on">Videos</button>
+    <button data-tab="topics">✨ Topics</button>
+    <button data-tab="schedule">Schedule</button>
+    <button data-tab="analytics">Analytics</button>
+    <button data-tab="agent">Agent</button>
+    <button data-tab="jobs">Activity</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+</header>
+<main>
+
+<section id="projects" class="tab on">
+  <div id="list">
+    <div class="row" style="margin-bottom:16px">
+      <h2 style="margin:0">Videos</h2>
+      <span class="muted" id="count"></span>
+      <span style="flex:1"></span>
+      <input id="newslug" placeholder="new-project-slug" pattern="[a-z0-9-]+">
+      <button class="act" onclick="newProject()">+ New project</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <div id="detail" style="display:none"></div>
+</section>
+
+<section id="topics" class="tab">
+  <div class="row" style="margin-bottom:6px">
+    <h2 style="margin:0">Topics</h2>
+    <div class="seg"><button id="kshort" class="on" onclick="setKind('short')">Shorts</button><button id="klong" onclick="setKind('long')">Long videos</button></div>
+    <span class="muted" id="tpmeta"></span>
+    <span style="flex:1"></span>
+    <button class="act sec" id="tprefresh" onclick="refreshSources()">↻ Refresh sources</button>
+  </div>
+  <p class="muted" style="margin:0 0 12px" id="tpdesc"></p>
+  <div id="tpempty" class="card" style="display:none"></div>
+  <div id="tppicks" style="margin-bottom:16px"></div>
+  <div class="grid" id="tpopts" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))"></div>
+  <div class="row" style="margin:18px 0; justify-content:center">
+    <button class="act blue" id="tpgo" onclick="getIdeas()">✨ Get 3 ideas</button>
+    <button class="act" id="tpreroll" onclick="getIdeas()" style="display:none">🎲 Re-roll: 3 new ideas</button>
+  </div>
+  <div id="tpstatus" class="muted" style="text-align:center"></div>
+  <h4>Top performers it is learning from</h4>
+  <div class="card" style="padding:0; overflow:auto"><table id="tptop"></table></div>
+</section>
+
+<section id="schedule" class="tab">
+  <div class="row" style="margin-bottom:12px">
+    <h2 style="margin:0">Schedule</h2><span class="muted" id="schedmeta">from YouTube</span>
+    <span style="flex:1"></span>
+    <button class="act sec" onclick="loadSchedule(true)">↻ Refresh from YouTube</button>
+    <button class="act sec" onclick="api('/api/open-planner',{method:'POST'})">Open planner in Excel</button>
+  </div>
+  <div id="schedwarn" class="card" style="display:none; margin-bottom:12px"></div>
+  <h4 style="margin-top:0">On YouTube <span class="muted">(live, scheduled and private, straight from the channel)</span></h4>
+  <div class="card" style="padding:0; max-height:46vh; overflow:auto"><table id="schedyt"></table></div>
+  <h4>Still to make and post <span class="muted">(planner rows that are not on YouTube yet)</span></h4>
+  <div class="card" style="padding:0; max-height:40vh; overflow:auto"><table id="sched"></table></div>
+</section>
+
+<section id="analytics" class="tab">
+  <div class="row" style="margin-bottom:12px">
+    <h2 style="margin:0">Analytics</h2><span class="muted" id="ancount"></span>
+    <span style="flex:1"></span>
+    <button class="act sec" id="connbtn" onclick="run({action:'auth'})" style="display:none">Connect YouTube</button>
+    <button class="act" id="syncbtn" onclick="syncNow()">⟳ Sync now</button>
+  </div>
+  <div class="card" id="anstatus" style="margin-bottom:12px"></div>
+  <div class="card" style="padding:0; overflow:auto; max-height:46vh"><table id="antable"></table></div>
+  <p class="muted">Numbers come from YouTube by themselves (Data API + Analytics API) and refresh every few hours; they run 1 to 2 days behind. You can change slot, type, project and notes (kept across syncs). <b>Engaged %</b> = engaged views / views, a proxy: YouTube's "Viewed vs swiped away" isn't available to the API, so type it into the last-but-one column from Studio if you want it. <b>Drop at</b> = the second where the retention curve falls hardest after the first 10%.</p>
+
+  <div id="ansum" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); margin:14px 0"></div>
+
+  <div class="card">
+    <h2 style="margin-bottom:6px">Analyze with the agent</h2>
+    <p class="muted" style="margin:0 0 8px">The agent reads the numbers, the planner and the scripts, then writes a report with what worked, what's noise, and up to 3 decisions. It never edits your planner or videos; you decide what to apply.</p>
+    <textarea id="anq" rows="2" placeholder="Optional question, e.g. Should I move slot A to the evening?"></textarea>
+    <div class="row" style="margin:8px 0"><button class="act blue" id="anbtn" onclick="analyze()">Analyze &amp; recommend</button><span class="muted">Needs numbers for at least 2 videos.</span></div>
+    <div class="log" id="anlog" style="height:150px"></div>
+  </div>
+  <h4>Reports</h4>
+  <div class="row" id="replist" style="margin-bottom:8px"></div>
+  <div class="card" id="report" style="display:none"></div>
+</section>
+
+<section id="agent" class="tab">
+  <h2>Ask the agent</h2>
+  <p class="muted">Runs Claude Code in your youtube folder with the command from Settings. It can use the line-boil and yt-* skills. Output appears below and in Activity.</p>
+  <div class="quick" id="quick"></div>
+  <textarea id="prompt" rows="5" placeholder="e.g. Make a new Short with the line-boil skill about why onions make you cry. Go straight through without waiting for my OK."></textarea>
+  <div class="row" style="margin:10px 0"><button class="act blue" onclick="askAgent()">Run agent</button>
+    <label class="muted" style="font-weight:600">Length <select id="agentlen" title="Passed to the line-boil skill as a target length"></select></label>
+    <label class="muted" style="font-weight:600"><input type="checkbox" id="agentwin"> 🪟 own window</label>
+    <span class="muted">Long jobs keep running if you switch tabs.</span></div>
+  <div class="log" id="agentlog"></div>
+</section>
+
+<section id="jobs" class="tab">
+  <h2>Activity</h2>
+  <div class="row" style="margin-bottom:10px">
+    <button class="act sec" onclick="run({action:'auth'})">YouTube sign-in</button>
+  </div>
+  <div class="jobs" id="joblist"></div>
+  <div class="row" style="margin-bottom:6px"><b id="jobtitle" style="font-size:13px"></b><span style="flex:1"></span><button class="act red" id="stopbtn" onclick="stopJob()" style="display:none">Stop</button></div>
+  <div class="log" id="joblog"></div>
+  <h4>Agent runs <span class="muted" id="runsum"></span></h4>
+  <p class="muted" style="margin:0 0 6px">The video itself (voice, drawing, rendering) runs on your computer for free. Only the agent that writes and checks it uses Claude. The cost is Claude's own estimate at API prices: on a subscription it counts against your plan's usage instead of being billed.</p>
+  <div class="card" style="padding:0; overflow:auto"><table id="runs"></table></div>
+</section>
+
+<section id="settings" class="tab">
+  <h2>Settings</h2>
+  <p class="muted">Paths, posting slots, models, source channels and the port. Only what you change is stored in <code>config.json</code> (a backup of the old one is kept), so new defaults in updates still reach you. Restart <code>start.bat</code> after changing the port.</p>
+  <textarea id="cfg" rows="22"></textarea>
+  <div class="row" style="margin-top:10px"><button class="act" onclick="saveCfg()">Save settings</button><span class="muted" id="cfgmsg"></span></div>
+</section>
+
+</main>
+<div class="modal" id="wiz"><div class="box" id="wizbox"></div></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let TOAST_T = null;
+function toast(msg, ms = 7000) { const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(TOAST_T); TOAST_T = setTimeout(() => el.classList.remove('on'), ms); }
+async function api(url, opt = {}) {      // opt.silent: background polls don't pop up errors
+  const silent = opt.silent; delete opt.silent;
+  if (opt.body && typeof opt.body !== 'string') { opt.body = JSON.stringify(opt.body); opt.headers = {'Content-Type': 'application/json'}; }
+  let r;
+  try { r = await fetch(url, opt); } catch (e) { if (!silent) toast('Cannot reach Hindi Explainer Studio. Is its console window still open?'); throw e; }
+  if (!r.ok) {
+    const t = await r.text();
+    let msg = t;
+    if (t.trim().startsWith('<!doctype')) {      // Flask's HTML error page: show just its message
+      const m = t.match(/<p>([\s\S]*?)<\/p>/);
+      msg = t.includes('The requested URL was not found') ? 'This page is newer than the running Hindi Explainer Studio. Close its console window and run start.bat again.'
+          : (m ? new DOMParser().parseFromString(m[1], 'text/html').body.textContent : 'Error ' + r.status);
+    }
+    if (!silent) toast(msg);
+    const err = new Error(msg); err.status = r.status; throw err;
+  }
+  return r.json();
+}
+const istDate = (add = 0) => new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Kolkata'}).format(new Date(Date.now() + add * 864e5));   // YYYY-MM-DD in IST
+let TYPES = [], VOICES = [], META = null;       // shared lists come from the server, so they exist in one place only
+function fillLengths() {           // the Agent tab's Length option: what you pick is passed to the skill as the target length
+  const L = META.lengths;
+  $('#agentlen').innerHTML = '<option value="">Auto (the skill default, 32 to 42 s)</option>' +
+    `<optgroup label="Short (9:16)">${L.short.map(x => `<option value="${x}">${x} seconds</option>`).join('')}</optgroup>` +
+    `<optgroup label="Long video (16:9)">${L.long.map(x => `<option value="${x}">${x / 60} minutes</option>`).join('')}</optgroup>`;
+}
+async function initMeta() { await checkMeta(true); setInterval(checkMeta, 60000); }
+let RESTARTING = false;
+async function restartStudio() {          // start.bat restarts the server on exit code 3; wait for the new copy, then reload the page
+  if (RESTARTING) return; RESTARTING = true;
+  const was = META && META.started;
+  $('#stale').textContent = '↻ Restarting Hindi Explainer Studio with the new code…'; $('#stale').style.display = '';
+  try { await fetch('/api/restart', {method: 'POST'}); } catch (e) {}
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    try { const m = await (await fetch('/api/meta')).json(); if (m.started !== was) return location.reload(); } catch (e) {}
+  }
+  RESTARTING = false; $('#stale').textContent = '⚠ The restart did not come back. Close the console window and run start.bat again.';
+}
+async function checkMeta(onLoad) {
+  const m = await api('/api/meta', {silent: true}).catch(() => null); if (!m) return;
+  if (!META) { META = m; TYPES = m.types; VOICES = m.voices; fillLengths(); if (m.config_problem) toast('⚠ ' + m.config_problem, 15000); }
+  const stale = m.current > m.started + 1;
+  if (RESTARTING) return;
+  $('#stale').style.display = stale ? '' : 'none';
+  if (!stale) return;
+  if (m.restartable) {
+    $('#stale').innerHTML = '⚠ The studio\'s code changed after it started. <button class="act" onclick="restartStudio()">↻ Restart now</button>' + (m.busy ? ' <span class="muted">(a job is running: it would be stopped)</span>' : '');
+    if (onLoad === true && !m.busy) restartStudio();             // a page refresh picks up the new code by itself, unless a job would be cut off
+  }
+}
+let CFG = {};
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => show(b.dataset.tab));
+function show(tab) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.id === tab));
+  ({projects: loadProjects, topics: loadTopics, schedule: loadSchedule, analytics: loadAnalytics, jobs: loadJobs, settings: loadCfg}[tab] || (() => {}))();
+}
+
+// ---------- videos ----------
+const STEP_LABELS = {script: 'Script', video: 'Video', srt: 'Captions', thumbnail: 'Thumbnail', sheet: 'Upload sheet', uploaded: 'Uploaded', sources: 'Sources', chapters: 'Chapters'};
+const stepChips = p => (p ? Object.keys(p.steps) : ['script', 'video', 'srt', 'thumbnail', 'sheet']).map(k => { const on = p && p.steps[k]; return `<span class="chip ${on ? 'y' : 'n'}">${on ? '✓' : '·'} ${STEP_LABELS[k] || k}</span>`; }).join('');
+const YT = {live: 'LIVE', scheduled: 'SCHEDULED', private: 'PRIVATE', unlisted: 'UNLISTED'};
+const ytBadge = y => y ? `<span class="stt ${y.state}" title="${esc(y.when)}">${YT[y.state] || y.state.toUpperCase()}${y.state === 'scheduled' ? ' · ' + esc(y.when.slice(5, 16).replace('T', ' ')) + ' IST' : ''}</span>` : '';
+let MAKEPOLL = null, GRIDSIG = '';
+async function loadProjects() {
+  $('#detail').style.display = 'none'; $('#list').style.display = '';
+  api('/api/youtube/videos?refresh=1', {silent: true}).catch(() => {});          // keeps the badges current (the server throttles this)
+  const [ps, jobs] = await Promise.all([api('/api/projects'), api('/api/jobs')]);
+  const making = jobs.filter(j => !j.done && j.label.startsWith('make · '));
+  $('#count').textContent = `${ps.length} videos · ${ps.filter(p => p.ready && !p.steps.uploaded).length} ready to upload · ${ps.filter(p => p.yt && p.yt.state === 'live').length} live`;
+  const html = making.map(j => { const slug = j.label.slice(7), p = ps.find(x => x.name === slug), g = j.progress || {pct: 0, stage: 'Starting'};
+    return `<div class="card making"><div class="ph" style="border-style:dashed"><div style="text-align:center"><div class="spin" style="font-size:28px">⟳</div><div>the agent is making<br><b>${esc(slug)}</b></div></div></div>
+      <h3>${p && p.title ? esc(p.title) : esc(slug)}</h3>
+      <div class="bar"><i style="width:${g.pct}%"></i></div>
+      <div class="slug"><b>${g.pct}%</b> · ${esc(g.stage)} · ${esc(j.elapsed || '')}</div>
+      <div class="now">${j.window ? '🪟 running in its own Claude window' : '▸ ' + esc(j.activity || 'starting…')}</div>
+      <div class="chips">${stepChips(p)}</div>
+      <div style="margin-top:8px"><a href="#" onclick="show('jobs');watch('${j.id}');return false">watch every step live →</a></div></div>`; }).join('') +
+  ps.filter(p => !making.some(j => j.label.slice(7) === p.name)).map(p => `
+    <div class="card proj" onclick="openProject('${p.name}')">
+      ${p.steps.thumbnail ? `<img class="${p.kind === 'long' ? 'wide' : ''}" loading="lazy" src="/media/${p.name}/${p.name}-thumbnail.png?${p.modified}">` : `<div class="ph ${p.kind === 'long' ? 'wide' : ''}">${p.kind === 'long' ? 'long video<br>no thumbnail yet' : 'no thumbnail yet'}</div>`}
+      <h3>${esc(p.title || p.name)}</h3>
+      <div class="slug">${p.kind === 'long' ? '🎞 long · ' : ''}${p.name} · ${p.words} words</div>
+      <div style="margin-top:6px">${p.yt ? ytBadge(p.yt) : p.steps.uploaded ? '<span class="badge up">UPLOADED</span>' : p.ready ? `<span class="badge ok">READY</span>` : '<span class="badge">IN PROGRESS</span>'}
+        <button class="del" style="float:right" title="Delete from disk" onclick="event.stopPropagation(); deleteProject('${p.name}', ${p.yt ? "'" + p.yt.state + "'" : 'null'})">🗑 Delete</button></div>
+      <div class="chips">${stepChips(p)}</div>
+    </div>`).join('');
+  const sig = JSON.stringify([making.map(j => [j.id, j.progress && j.progress.pct, j.activity, j.elapsed]), ps.map(p => [p.name, p.modified, p.title, p.yt && p.yt.state + p.yt.when, p.steps])]);
+  if (sig !== GRIDSIG) { GRIDSIG = sig; $('#grid').innerHTML = html; }       // only redraw when something changed (no flicker while a video is being made)
+  clearInterval(MAKEPOLL); if (making.length) MAKEPOLL = setInterval(() => { if ($('#projects').classList.contains('on') && $('#detail').style.display === 'none') loadProjects(); else clearInterval(MAKEPOLL); }, 4000);
+}
+async function deleteProject(name, ytState) {
+  const live = ytState ? `\n\nIt is ${ytState.toUpperCase()} on YouTube. Deleting here does NOT remove it from YouTube.` : '';
+  if (!confirm(`Delete "${name}" from this computer?\n\nThe video, thumbnail, script and all files in its folder are removed permanently (not sent to the Recycle Bin).${live}`)) return;
+  const r = await api('/api/projects/' + name, {method: 'DELETE'});
+  toast(`Deleted ${name} (${r.freed_mb} MB freed).`);
+  loadProjects();
+}
+async function openProject(name) {
+  const p = await api('/api/projects/' + name);
+  const long = p.kind === 'long';
+  CFG = await api('/api/config');
+  $('#list').style.display = 'none'; const d = $('#detail'); d.style.display = '';
+  setTimeout(() => useNextSlot(true), 0);
+  d.innerHTML = `
+    <span class="back" onclick="loadProjects()">← all videos</span>
+    <div class="detail">
+      <div>
+        ${p.steps.video ? `<video class="${long ? 'wide' : ''}" controls preload="metadata" src="/media/${name}/${name}.mp4?${p.modified}"></video>` : '<div class="card muted">No video yet. Run Voice, then Build video.</div>'}
+        ${p.steps.thumbnail ? `<h4>Thumbnail</h4><img class="thumb ${long ? 'wide' : ''}" src="/media/${name}/${name}-thumbnail.png?${p.modified}">` : ''}
+      </div>
+      <div>
+        <div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(p.title || name)}</h2>${p.yt ? ytBadge(p.yt) : ''}
+          <button class="del" onclick="deleteProject('${name}', ${p.yt ? "'" + p.yt.state + "'" : 'null'}).then(() => loadProjects())">🗑 Delete</button></div>
+        <div style="height:10px"></div>
+        <div class="chips" style="margin-bottom:14px">${stepChips(p)}</div>
+        ${p.upload ? `<div class="card" style="margin-bottom:14px">Uploaded: <a href="${p.upload.url}" target="_blank">${p.upload.url}</a> · goes live ${new Date(p.upload.publishAt).toLocaleString()} · <a href="${p.upload.studio}" target="_blank">open in Studio</a></div>` : ''}
+        ${`        <h4>Build</h4>
+        <div class="row">
+          <button class="act sec" onclick="run({action:'voice',project:'${name}'})">1 · Voice</button>
+          <button class="act sec" onclick="run({action:'check',project:'${name}'})">2 · Check</button>
+          <button class="act" onclick="run({action:'video',project:'${name}'})">3 · Build video</button>
+          <button class="act sec" onclick="run({action:'thumb',project:'${name}'})">4 · Thumbnail</button>
+          <button class="act red" title="Three thumbnail ideas built on different click triggers; pick one and it is drawn" onclick="thumbIdeas('${name}')">🖼 Better thumbnail</button>
+          <button class="act sec" onclick="run({action:'sheet',project:'${name}'})">Contact sheet</button>${long && p.steps.video ? `<button class="act blue" title="yt-shorts: which moments survive alone, with new scored first lines" onclick="run({action:'spinoffs',project:'${name}'})">✂ Spin-off Shorts</button>` : ''}${long ? `<button class="act sec" onclick="run({action:'chapters',project:'${name}'})">Chapters</button>` : ''}
+          <button class="act blue" onclick="agentFor('${name}')">Ask agent…</button>
+        </div>
+        <h4>Upload &amp; schedule</h4>
+        <div class="card">
+          <div class="row">
+            <label>Date <input type="date" id="update" value="${istDate(1)}" onchange="whenHint()"></label>
+            <label>Time (IST) <select id="uptime" onchange="whenHint()">${timeOptions()}</select></label>
+            <button class="act sec" onclick="useNextSlot()" title="The first slot with nothing live or scheduled around it">⏭ Next free slot</button>
+            <span class="muted" id="whenhint"></span>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="act sec" onclick="upload('${name}', 'dry')">Dry run</button>
+            <button class="act blue" onclick="upload('${name}', 'schedule')" ${p.ready ? '' : 'disabled title="needs video, captions, thumbnail and upload sheet"'}>Upload + schedule</button>
+            <button class="act red" onclick="upload('${name}', 'now')" ${p.ready ? '' : 'disabled title="needs video, captions, thumbnail and upload sheet"'}>⚡ Post now</button>
+            <button class="act sec" onclick="run({action:'comment',project:'${name}'})" ${p.upload ? '' : 'disabled'}>Post pinned comment</button>
+          </div>
+          <p class="muted" style="margin:8px 0 0">Sets title, description, tags, Education, not made for kids, altered content No, thumbnail and captions. <b>Post now</b> publishes publicly right away; <b>Upload + schedule</b> keeps it private until the chosen time.</p>
+          <div class="chips" style="margin-top:8px"><span class="chip">After upload, in Studio → Education:</span><span class="chip y">Type: Concept overview</span><span class="chip y">Level: None</span><span class="chip y">pin the comment</span></div>
+        </div>
+`}
+        <h4>Script <span class="muted">(one sentence per line · re-run Voice after editing)</span></h4>
+        <textarea id="script" rows="8">${esc(p.script.join('\n'))}</textarea>
+        <div class="row" style="margin-top:6px"><button class="act sec" onclick="saveScript('${name}')">Save script</button></div>
+        <h4>Upload sheet <span class="muted">(${name}-youtube.txt)</span></h4>
+        <textarea id="sheet" rows="16" placeholder="No sheet yet. Ask the agent to write one.">${esc(p.sheet_text)}</textarea>
+        <div class="row" style="margin-top:6px"><button class="act sec" onclick="saveSheet('${name}')">Save sheet</button></div>
+        ${long ? Object.entries(p.docs || {}).map(([k, t]) => `<h4>${k} <span class="muted">(written by the agent)</span></h4><textarea readonly rows="10">${esc(t)}</textarea>`).join('') : ''}
+      </div>
+    </div>`;
+}
+async function saveScript(n) { await api(`/api/projects/${n}/script`, {method: 'PUT', body: {sentences: $('#script').value.split('\n')}}); toast('Script saved. Run Voice to re-record it.'); }
+async function saveSheet(n) { await api(`/api/projects/${n}/sheet`, {method: 'PUT', body: {text: $('#sheet').value}}); toast('Upload sheet saved.'); }
+// every 15 minutes, IST; the channel's slots come first
+function timeOptions() {
+  const slots = Object.entries(CFG.slots).sort((x, y) => x[1].localeCompare(y[1]));
+  let h = `<optgroup label="Your slots">${slots.map(([k, v]) => `<option value="${v}">${k} · ${v}</option>`).join('')}</optgroup><optgroup label="Any time">`;
+  for (let m = 0; m < 1440; m += 15) { const t = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); h += `<option value="${t}">${t}</option>`; }
+  return h + '</optgroup>';
+}
+function whenHint() {   // what the chosen IST time is for viewers in the US and India
+  const d = $('#update').value, t = $('#uptime').value; if (!d || !t) return;
+  const at = new Date(`${d}T${t}:00+05:30`);
+  const f = tz => at.toLocaleString('en-US', {timeZone: tz, weekday: 'short', hour: 'numeric', minute: '2-digit'});
+  $('#whenhint').textContent = `= ${f('America/New_York')} ET · ${f('America/Los_Angeles')} PT`;
+}
+async function useNextSlot(quiet) {
+  const s = await api('/api/next-slot', {silent: quiet});
+  if (!s.at) return quiet || toast('No free slot found in the next 30 days.');
+  $('#update').value = s.date; $('#uptime').value = s.time; whenHint();
+  if (!quiet) toast(`Next free slot: ${s.date} ${s.time} IST (slot ${s.slot})` + (s.checked_youtube ? '' : '. YouTube is not connected, so this only skips times that have passed.'));
+}
+function upload(n, mode) {
+  if (mode !== 'now' && !$('#update').value) return toast('Pick a date first.');
+  const at = `${$('#update').value} ${$('#uptime').value}`;
+  if (mode === 'now' && !confirm(`Post "${n}" to YouTube right now? It becomes public immediately.`)) return;
+  if (mode === 'schedule' && !confirm(`Upload "${n}" and schedule it for ${at} IST?`)) return;
+  run({action: mode === 'dry' ? 'upload-dry' : 'upload', project: n, at, now: mode === 'now'});
+}
+async function newProject() {
+  const s = $('#newslug').value.trim();
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(s)) return toast('Use a lowercase slug like why-onions-cry');
+  await run({action: 'new', project: s});
+}
+function agentFor(n) { show('agent'); $('#prompt').value = `For the line-boil project ${n}: `; $('#prompt').focus(); }
+
+// ---------- jobs ----------
+let CUR = null; const POLLS = {};
+async function run(body) { const j = await api('/api/run', {method: 'POST', body}); show('jobs'); watch(j.id); }
+async function loadJobs() {
+  const js = await api('/api/jobs', {silent: true});
+  api('/api/runs', {silent: true}).then(r => {
+    $('#runsum').textContent = r.count ? `${r.count} runs · about $${r.total} in total at API prices` : '';
+    $('#runs').innerHTML = `<tr><th>When</th><th>What</th><th>Time</th><th>Turns</th><th>Est. cost</th><th></th></tr>` +
+      (r.runs.length ? r.runs.map(x => `<tr><td>${esc(x.when)}</td><td>${esc(x.label)}</td><td>${Math.floor(x.secs / 60)} min ${x.secs % 60} s</td><td>${x.turns ?? ''}</td><td>$${(x.cost || 0).toFixed(2)}</td><td>${x.code === 0 ? '✓' : '✗'}</td></tr>`).join('') : '<tr><td colspan=6 class="muted" style="padding:14px">Runs appear here after the next video, idea set or agent request finishes.</td></tr>');
+  }).catch(() => {});
+  $('#joblist').innerHTML = js.map(j => `<div class="job ${j.id === CUR ? 'sel' : ''}" onclick="watch('${j.id}')"><span>${esc(j.label)}</span><span>${j.done ? (j.code === 0 ? '✓ done' : '✗ exit ' + j.code) : (j.progress ? j.progress.pct + '%' : '…') + ' running'}</span></div>`).join('') || '<span class="muted">Nothing run yet.</span>';
+}
+function watch(id, target = '#joblog', onDone) {       // each log pane has its own poller, so watching one job never cancels another's callback
+  if (target === '#joblog') CUR = id;
+  clearInterval(POLLS[target]); let n = 0; $(target).textContent = '';
+  const tick = async () => {
+    let j;
+    try { j = await api(`/api/jobs/${id}?since=${n}`, {silent: true}); }
+    catch (e) { clearInterval(POLLS[target]); $(target).textContent += '\n(that job is no longer known: the studio was restarted)'; if (onDone) onDone({code: -1}); return; }
+    n = j.n;
+    if (target === '#joblog') { $('#jobtitle').textContent = j.label; $('#stopbtn').style.display = j.done ? 'none' : ''; }
+    if (j.log.length) { const el = $(target); el.textContent += j.log.join('\n') + '\n'; el.scrollTop = el.scrollHeight; }
+    if (j.done) { clearInterval(POLLS[target]); $(target).textContent += j.code === 0 ? '\n✓ finished' : `\n✗ exited with ${j.code}`; if (onDone) onDone(j); }
+    if (target === '#joblog' || j.done) loadJobs().catch(() => {});
+  };
+  tick(); POLLS[target] = setInterval(tick, 1000);
+}
+async function stopJob() { if (CUR) await api(`/api/jobs/${CUR}/stop`, {method: 'POST'}); }
+
+// ---------- agent ----------
+const QUICK = [
+  ['New Short', 'Make a new Short with the line-boil skill about TOPIC. Write the script, fact-check it, build the video, render the thumbnail and write the upload sheet. Go straight through without waiting for my OK.'],
+  ['Upload sheet', 'Write the YouTube upload sheet for the line-boil project SLUG, following the skill\'s references/youtube.md.'],
+  ['Thumbnail', 'Write web/thumb.js and render the thumbnail for the line-boil project SLUG, following SKILL.md step 9.'],
+  ['Rebuild old Short', 'Rebuild the line-boil project SLUG with the current engine so it has captions, the .srt and the outro. Check caption placement on a still per shot.'],
+  ['Idea batch', 'Suggest 10 new Short ideas for Hindi Explainer Studio across different video types (see the Types tab in data/planner.xlsx), avoiding topics already in the planner.'],
+];
+$('#quick').innerHTML = QUICK.map(([l, t], i) => `<button class="act sec" onclick="$('#prompt').value=QUICK[${i}][1]">${l}</button>`).join('') +
+  `<button class="act blue" onclick="show('analytics'); analyze()" title="Reads your Analytics tab, writes a report with decisions">📊 Analyze analytics</button>`;
+async function askAgent() {
+  const prompt = $('#prompt').value.trim(); if (!prompt) return;
+  const j = await api('/api/agent', {method: 'POST', body: {prompt, duration: $('#agentlen').value || null, window: $('#agentwin').checked}});
+  watch(j.id, '#agentlog');
+}
+
+// ---------- topics ----------
+let TKIND = 'short', TPPOLL = null;
+const TOPT = {short: [], long: []}, TPICK = {short: [], long: []};
+const TDESC = {
+  short: `Studies what is beating its own channel's average on other channels in your category (<span id="tpcat"></span>), then adapts the best into <b>3 original ideas</b> for you: the topic and format are borrowed, never the script or title. Pick one, answer a few questions, and the agent makes the whole video.`,
+  long: `The same study for <b>long videos</b> (4 to 40 minutes) on other channels, adapted into 3 ideas with chapters, a runtime and sources to check. <b>Researched picks</b> sit on top. A long video is made end to end in <b>16:9</b> with the line-boil-wide skill: sourced script, chapters timed from the real voiceover, the animation, a 1280×720 thumbnail and the upload sheet.`};
+function setKind(k) {
+  TKIND = k; $('#kshort').classList.toggle('on', k === 'short'); $('#klong').classList.toggle('on', k === 'long');
+  clearInterval(TPPOLL); $('#tpstatus').textContent = ''; loadTopics();
+}
+async function loadTopics() {
+  const k = TKIND;
+  const [t, pk] = await Promise.all([api('/api/topics?kind=' + k), api('/api/topics/picks?kind=' + k)]);
+  if (k !== TKIND) return;                               // switched format while this was loading
+  TPICK[k] = pk.picks;
+  if (!TOPT[k].length && pk.last.length) TOPT[k] = pk.last;          // the last five ideas are still here after a reload
+  $('#tpdesc').innerHTML = TDESC[k]; if ($('#tpcat')) $('#tpcat').textContent = t.category || 'your category';
+  $('#tpmeta').textContent = t.fetched ? `${t.videos} ${k === 'short' ? 'Shorts' : 'long videos'} from ${t.channels.length} channels · studied ${ago(t.fetched)}` : '';
+  $('#tprefresh').disabled = t.refreshing; $('#tprefresh').textContent = t.refreshing ? `↻ Studying… ${t.progress}` : '↻ Refresh sources';
+  const e = $('#tpempty');
+  e.style.display = t.videos ? 'none' : '';
+  e.innerHTML = t.videos ? '' : `<b>No ${k === 'short' ? 'Shorts' : 'long-video'} source data yet.</b> Press <b>Refresh sources</b> to study ${t.channels.length} channels in your category (about a minute; public data only, no login).${t.error ? `<div style="color:#c0262d;margin-top:6px">⚠ ${esc(t.error)}</div>` : ''}`;
+  $('#tpgo').disabled = !t.videos;
+  $('#tptop').innerHTML = `<tr><th>x channel median</th><th>Views</th><th>Channel</th><th>Title</th><th>Format</th></tr>` + (t.top || []).map(v => `<tr><td><b>${v.multiple}×</b></td><td>${v.views.toLocaleString()}</td><td>${esc(v.channel)}</td><td><a href="${v.url}" target="_blank">${esc(v.title)}</a>${v.duration ? ` <span class="muted">${Math.round(v.duration / 60)} min</span>` : ''}</td><td>${esc(v.type)}</td></tr>`).join('');
+  drawPicks(); drawOptions();
+  if (t.refreshing) setTimeout(() => $('#topics').classList.contains('on') && loadTopics(), 3000);
+}
+async function refreshSources() { await api('/api/topics/refresh', {method: 'POST', body: {kind: TKIND}}); loadTopics(); }
+function optionCard(o, i, src) {
+  const long = TKIND === 'long';
+  return `<div class="card opt ${src === 'pick' ? 'pick' : ''}" onclick="openWizard('${src}', ${i})">
+    ${src === 'pick' ? '<span class="n">⭐ researched</span>' : `<span class="n">#${i + 1}</span>`}<span class="chip">${esc(o.type)}</span> <span class="chip risk-${o.fact_risk}" title="${esc(o.fact_note)}">facts: ${o.fact_risk}</span>${long && o.runtime_min ? ` <span class="chip">⏱ ~${o.runtime_min} min</span>` : ''}${o.adapted ? '' : ' <span class="chip" title="the agent did not return an adapted idea">raw source</span>'}
+    <h3>${esc(o.title)}</h3>
+    ${o.promise ? `<div style="font-size:13px">${esc(o.promise)}</div>` : ''}
+    ${o.visual ? `<div class="muted" style="margin-top:6px">🎨 ${esc(o.visual)}</div>` : ''}
+    ${long && (o.chapters || []).length ? `<ul>${o.chapters.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
+    ${long && (o.reuse_shorts || []).length ? `<div class="muted" style="margin-top:6px">♻ builds on: ${o.reuse_shorts.map(esc).join(' · ')}</div>` : ''}
+    ${(o.why || []).length ? `<div style="margin-top:8px;font-size:12px"><b>Why this one</b><ul>${o.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}
+    <div class="muted" style="margin-top:8px;border-top:1px dashed #ccc;padding-top:6px">Inspired by <b>${esc(o.inspired_by.channel)}</b>: “${esc(o.inspired_by.title)}”${o.inspired_by.multiple ? ` · ${o.inspired_by.multiple}× its channel's median` : ''}</div>
+    <div style="margin-top:8px"><span class="act" style="display:inline-block;font-size:12px;padding:4px 10px">${long ? 'Make this →' : 'Pick this →'}</span></div></div>`;
+}
+function drawPicks() {
+  const picks = TPICK[TKIND] || [];
+  $('#tppicks').innerHTML = picks.length ? `<h4 style="margin:0 0 8px">⭐ Researched pick${picks.length > 1 ? 's' : ''} <span class="muted">(checked against the data and sources; brief included)</span></h4><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${picks.map((o, i) => optionCard(o, i, 'pick')).join('')}</div>` : '';
+}
+function drawOptions() {
+  const o = TOPT[TKIND] || [];
+  $('#tpopts').innerHTML = o.map((x, i) => optionCard(x, i, 'opt')).join('');
+  $('#tpgo').style.display = o.length ? 'none' : ''; $('#tpreroll').style.display = o.length ? '' : 'none';
+}
+async function getIdeas() {
+  const k = TKIND, busy = on => { $('#tpgo').disabled = on; $('#tpreroll').disabled = on; };
+  busy(true);
+  const say = m => { if (k === TKIND) $('#tpstatus').innerHTML = m; };
+  say(`<span class="spin">⟳</span> The agent is adapting the best performers into ${k === 'long' ? 'long-video' : ''} ideas for your channel… (usually 30–90 s)`);
+  let r; try { r = await api('/api/topics/options', {method: 'POST', body: {kind: k}}); } catch (e) { busy(false); say(''); return; }
+  clearInterval(TPPOLL);
+  TPPOLL = setInterval(async () => {
+    let b;
+    try { b = await api('/api/topics/batch/' + r.batch, {silent: true}); }
+    catch (e) { clearInterval(TPPOLL); busy(false); say('Lost track of that request (the studio restarted?). Press the button to try again.'); return; }
+    if (b.status === 'running') { say(`<span class="spin">⟳</span> The agent is adapting the best performers into ideas… ${b.seconds}s`); return; }
+    clearInterval(TPPOLL); TOPT[k] = b.options; busy(false); say('');
+    if (k === TKIND) drawOptions();
+  }, 2000);
+}
+const LENGTH_LABEL = {30: 'About 30 seconds (~93 words) · fastest, punchy', 40: "About 40 seconds (~124 words) · the channel's usual", 50: 'About 50 seconds (~155 words)', 60: 'About 60 seconds (~186 words) · the Shorts maximum'};
+const MIN_LABEL = {5: '5 minutes (~930 words)', 7: '7 minutes (~1,300 words) · the sweet spot for this style', 9: '9 minutes (~1,670 words)', 12: '12 minutes (~2,230 words)'};
+function openWizard(src, i) {
+  const long = TKIND === 'long', o = (src === 'pick' ? TPICK : TOPT)[TKIND][i];
+  const near = long ? ([5, 7, 9, 12].reduce((a, b) => Math.abs(b - (o.runtime_min || 7)) < Math.abs(a - (o.runtime_min || 7)) ? b : a)) : 40;
+  $('#wizbox').innerHTML = `<h2 style="margin:0 0 4px">${long ? 'Make this long video' : 'Make this video'}</h2><p class="muted" style="margin:0">${long
+      ? 'A few questions, then the agent writes the script chapter by chapter, fact-checks every claim against sources, times the chapters from the real voiceover, draws and renders the 16:9 video, and makes the upload sheet. This is a long job (it can take an hour or more of the agent\'s time); watch it in Videos.'
+      : 'A few questions, then the agent writes the script, fact-checks it, draws and renders the video, and makes the thumbnail and upload sheet. You can watch it in Videos.'}</p>
+    <label>Title</label><input type="text" id="w_title" value="${esc(o.title)}">
+    <label>Length</label>${long
+      ? `<select id="w_min">${META.lengths.long.map(x => x / 60).map(m => `<option value="${m}" ${m === near ? 'selected' : ''}>${MIN_LABEL[m] || m + ' minutes'}</option>`).join('')}</select>`
+      : `<select id="w_dur">${META.lengths.short.map(x => `<option value="${x}" ${x === near ? 'selected' : ''}>${LENGTH_LABEL[x] || x + ' seconds'}</option>`).join('')}</select>`}
+    ${long ? `<label>Structure</label><select id="w_struct"><option ${o.type === 'Ranking' ? 'selected' : ''}>a ranked countdown, from least to most effective</option><option>one story told in chapters</option><option>a myth-busting tour: claim, test, verdict</option><option ${o.type !== 'Ranking' ? 'selected' : ''}>as in the research brief or the topic's chapters</option></select>` : ''}
+    <label>Voice</label><select id="w_voice">${VOICES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
+    <label>Speaking pace <span class="muted" id="w_spv">1.0×</span></label><input type="range" id="w_speed" min="0.9" max="1.15" step="0.05" value="1" style="width:100%" oninput="$('#w_spv').textContent = this.value + '×'">
+    <label>Tone</label><select id="w_tone"><option>dry and deadpan, the channel default</option><option>playful and energetic</option><option>calm and curious</option><option>dramatic and suspenseful</option></select>
+    <label>Characters</label><select id="w_cast"><option value="new">A new cast of different beans for this topic</option><option value="host">Our red host bean as the hero, plus other beans</option></select>
+    <label>Ending</label><select id="w_end"><option>a punchy callback line</option><option>a question to the viewer for the comments</option><option>a teaser for the next bad idea</option></select>
+    ${long ? `<div class="row" style="margin-top:12px"><label style="margin:0"><input type="checkbox" id="w_caps"> Burned-in captions <span class="muted">(not the long-form standard: YouTube's own captions come from the uploaded .srt)</span></label></div>` : ''}
+    <div class="row" style="margin-top:12px"><label style="margin:0"><input type="checkbox" id="w_music" checked> Background music <span class="muted">(follows the script's mood)</span></label><label style="margin:0"><input type="checkbox" id="w_outro" checked> Channel outro (3.5 s)</label></div>
+    <label>Quality <span class="muted">(the video itself renders on your computer for free; this is the AI that writes and draws it)</span></label>
+    <select id="w_model"><option value="">The session default</option><option value="sonnet">Balanced · Sonnet: lighter on your usage, good for most Shorts</option><option value="opus">Best · Opus: strongest writing and staging, uses more</option></select>
+    <div class="row" style="margin-top:10px"><label style="margin:0"><input type="checkbox" id="w_window"> 🪟 Open in its own Claude window so I can watch every step (it may ask for permissions)</label></div>
+    ${long ? `<label style="margin-top:12px">Thumbnail <span class="muted">(a long video: pick when it is drawn)</span></label><select id="w_thumbmode"><option value="later">Later: from the Better thumbnail button (three ideas, you pick one)</option><option value="now">Now: drawn after the video, with the long-thumbnail skill</option></select><input type="hidden" id="w_thumb" value="">` : `<label>Thumbnail text <span class="muted">(optional, up to 3 words; blank = the agent chooses)</span></label><input type="text" id="w_thumb" maxlength="24" placeholder="e.g. TOO TALL?">`}
+    <label>Anything else? <span class="muted">(optional)</span></label><textarea id="w_notes" rows="3" placeholder="e.g. keep it gentle, include the 1982 lawn chair story, avoid mentioning X"></textarea>
+    <div class="row" style="margin-top:16px; justify-content:flex-end"><button class="act sec" onclick="closeWizard()">Cancel</button><button class="act red" id="wizgo" onclick="makeVideo('${src}', ${i})">${long ? '🎬 Make the long video' : '🎬 Make the video'}</button></div>`;
+  $('#wiz').classList.add('on');
+}
+function closeWizard() { $('#wiz').classList.remove('on'); }
+async function makeVideo(src, i) {
+  const long = TKIND === 'long';
+  const o = Object.assign({}, (src === 'pick' ? TPICK : TOPT)[TKIND][i], {title: $('#w_title').value.trim()});
+  const answers = {voice: $('#w_voice').value, speed: +$('#w_speed').value, tone: $('#w_tone').value, cast: $('#w_cast').value, ending: $('#w_end').value,
+    music: $('#w_music').checked, outro: $('#w_outro').checked, thumb_text: $('#w_thumb').value.trim(), thumb_now: long && $('#w_thumbmode').value === 'now', notes: $('#w_notes').value.trim(),
+    model: $('#w_model').value, window: $('#w_window').checked, captions: long && $('#w_caps').checked,
+    ...(long ? {minutes: +$('#w_min').value, structure: $('#w_struct').value} : {duration: +$('#w_dur').value})};
+  const btn = $('#wizgo'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Starting…';          // a second click would start a second video
+  try { await api('/api/topics/make', {method: 'POST', body: {kind: TKIND, topic: o, answers}}); closeWizard(); show('projects'); }
+  finally { btn.disabled = false; btn.textContent = label; }
+}
+
+// ---------- a better thumbnail: three ideas, pick one, it is drawn ----------
+let THPOLL;
+function drawThumbIdeas(name, ideas) {
+  window.THIDEAS = ideas;
+  $('#wizbox').innerHTML = `<h2 style="margin:0 0 4px">Pick a thumbnail</h2><p class="muted" style="margin:0 0 10px">Best first. The old thumbnail is kept as <code>${name}-thumbnail-prev.png</code>. Nothing is uploaded.</p>` + ideas.map((o, k) => `
+    <div class="card" style="margin-bottom:10px"><div class="row" style="justify-content:space-between"><b>${k + 1}. ${esc(o.name)}</b><span class="chip">${esc(o.trigger)}</span></div>
+      ${o.words ? `<div style="font-size:22px;font-weight:800;margin:6px 0">“${esc(o.words)}”</div>` : ''}
+      <div>${esc(o.concept)}</div><div class="muted" style="margin-top:4px"><b>Why it clicks:</b> ${esc(o.why)}</div>${o.risk ? `<div class="muted"><b>Watch out:</b> ${esc(o.risk)}</div>` : ''}
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="act red" onclick="thumbMake('${name}', ${k})">Draw this one</button></div></div>`).join('') +
+    `<div class="row" style="justify-content:flex-end"><button class="act sec" onclick="closeThumb()">Close</button><button class="act sec" title="Throw these away and analyse again for three new ideas" onclick="thumbIdeas('${name}', true)">↻ Reroll</button></div>`;
+}
+async function thumbIdeas(name, reroll = false) {
+  const box = $('#wizbox'); $('#wiz').classList.add('on');
+  if (!reroll) {                                                              // already analysed: show the saved five, don't start another run
+    box.innerHTML = '<p class="muted"><span class="spin">⟳</span> Opening…</p>';
+    const saved = await api(`/api/thumbnail/ideas/${name}`, {silent: true}).catch(() => null);
+    if (saved && saved.ideas && saved.ideas.length) { drawThumbIdeas(name, saved.ideas); return; }
+  }
+  box.innerHTML = `<h2 style="margin:0 0 4px">A better thumbnail</h2><p class="muted" id="thstatus"><span class="spin">⟳</span> The agent is studying the script and the current thumbnail, then writing three ideas built on different click triggers… (usually 1–2 minutes)</p><div class="row" style="justify-content:flex-end"><button class="act sec" onclick="closeThumb()">Cancel</button></div>`;
+  let r; try { r = await api('/api/thumbnail/ideas', {method: 'POST', body: {project: name}}); } catch (e) { closeWizard(); return; }
+  clearInterval(THPOLL);
+  THPOLL = setInterval(async () => {
+    let b; try { b = await api(`/api/thumbnail/ideas/${name}?job=${r.job}`, {silent: true}); } catch (e) { clearInterval(THPOLL); $('#thstatus').textContent = 'Lost track of that request. Close this and try again.'; return; }
+    if (b.status === 'running') return;
+    clearInterval(THPOLL);
+    if (!b.ideas.length) { box.innerHTML = `<h2 style="margin:0 0 4px">A better thumbnail</h2><p>The agent did not produce usable ideas (your earlier ideas, if any, are kept).</p><div class="row" style="justify-content:flex-end"><button class="act sec" onclick="closeThumb()">Close</button><button class="act" onclick="thumbIdeas('${name}')">Open saved / try again</button></div>`; return; }
+    drawThumbIdeas(name, b.ideas);
+  }, 2500);
+}
+function closeThumb() { clearInterval(THPOLL); closeWizard(); }
+async function thumbMake(name, k) {
+  const j = await api('/api/thumbnail/make', {method: 'POST', body: {project: name, idea: window.THIDEAS[k]}});
+  closeWizard(); show('jobs'); watch(j.id);
+}
+
+// ---------- analytics ----------
+let AN = [], PROJ = [];
+const AN_COLS = [['title','Video',240,'ro'],['posted','Posted',78,'ro'],['slot','Slot',54,'sel'],['type','Type',100,'sel'],['project','Project',100,'sel'],
+  ['views','Views',58,'ro'],['engaged_pct','Engaged %',66,'ro'],['avg_pct','% watched',68,'ro'],['avd_s','AVD s',54,'ro'],['likes','Likes',46,'ro'],
+  ['comments','Cmts',46,'ro'],['shares','Shares',52,'ro'],['subs','Subs',46,'ro'],['drop_s','Drop at s',62,'ro'],['geo','Top countries',150,'ro'],
+  ['viewed_pct','Viewed % (Studio)',92,'edit'],['notes','Notes',160,'edit']];
+let ANST = null, ANPOLL = null;
+async function loadAnalytics() {
+  const [a, ps] = await Promise.all([api('/api/analytics'), api('/api/projects')]);
+  AN = a.rows; PROJ = ps.map(p => p.name); ANST = a.status; drawAnalytics(a.summary); drawStatus(); loadReports();
+  clearInterval(ANPOLL);
+  if (a.status.syncing) ANPOLL = setInterval(async () => {          // while a sync runs, refresh only the status line (the table keeps your edits)
+    const x = await api('/api/analytics', {silent: true}).catch(() => null);
+    if (x && !x.status.syncing) { clearInterval(ANPOLL); loadAnalytics(); } else if (x) { ANST = x.status; drawStatus(); }
+  }, 4000);
+}
+function ago(iso) {
+  if (!iso) return 'never';
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  return m < 1 ? 'just now' : m < 90 ? `${m} min ago` : m < 2880 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`;
+}
+function drawStatus() {
+  const st = ANST, box = $('#anstatus');
+  $('#connbtn').style.display = st.connected ? 'none' : '';
+  $('#syncbtn').disabled = !st.connected || st.syncing; $('#syncbtn').textContent = st.syncing ? '⟳ Syncing…' : '⟳ Sync now';
+  if (!st.connected) box.innerHTML = `<b>● Not connected.</b> Press <b>Connect YouTube</b> and sign in with the channel's Google account. It asks for two read-only permissions (YouTube and YouTube Analytics). Also enable the <b>YouTube Analytics API</b> in your Google Cloud project once (see <code>tools/yt_upload.md</code>). <span class="muted">${esc((st.missing || []).join(', ').replace(/https:\/\/www.googleapis.com\/auth\//g, ''))}</span>`;
+  else box.innerHTML = `<b style="color:#2f8f3a">● Connected</b>${st.info ? ' · ' + esc(st.info.channel) + (st.info.subscribers ? ` · ${st.info.subscribers} subscribers` : '') : ''} · last synced <b>${ago(st.last_sync)}</b> · auto-refresh every ${st.auto_hours || 'no'} h` +
+    (st.error ? `<div style="color:#c0262d;margin-top:6px">⚠ ${esc(st.error)}</div>` : '') +
+    ((st.info && st.info.warnings && st.info.warnings.length) ? `<div class="muted" style="margin-top:4px">Some per-video details were skipped (usually videos with too few views): ${esc(st.info.warnings[0])}</div>` : '');
+}
+function drawAnalytics(summary) {
+  $('#ancount').textContent = `${AN.length} videos · ${AN.filter(r => r.views != null).length} with numbers`;
+  const fmt = (k, v) => v == null || v === '' ? '<span class="muted">–</span>' : k === 'posted' ? esc(String(v).slice(5)) : typeof v === 'number' ? (k === 'views' || k === 'likes' || k === 'comments' || k === 'shares' || k === 'subs' ? v.toLocaleString() : (Math.round(v * 10) / 10)) : esc(v);
+  const cell = (r, i, [k, , w, kind]) => {
+    const v = r[k] ?? '';
+    if (kind === 'ro') return `<div style="min-width:${w}px;max-width:${w + 40}px;padding:4px 6px;${k === 'title' ? 'font-weight:600;' : ''}">${fmt(k, r[k])}</div>`;
+    if (k === 'project') return `<select style="width:${w}px" onchange="AN[${i}].project=this.value||null;queueSave()"><option value=""></option>${PROJ.map(p => `<option ${p === v ? 'selected' : ''}>${p}</option>`).join('')}</select>`;
+    if (k === 'slot') return `<select style="width:${w}px" onchange="AN[${i}].slot=this.value||null;queueSave()">${['', 'A', 'B', 'Long'].map(o => `<option ${o === v ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+    if (k === 'type') return `<select style="width:${w}px" onchange="AN[${i}].type=this.value||null;queueSave()"><option value=""></option>${TYPES.map(o => `<option ${o === v ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+    return `<input style="width:${w}px" value="${esc(v)}" oninput="AN[${i}]['${k}']=this.value;queueSave()">`;
+  };
+  $('#antable').innerHTML = `<tr>${AN_COLS.map(c => `<th>${c[1]}</th>`).join('')}</tr>` +
+    (AN.length ? AN.map((r, i) => `<tr>${AN_COLS.map(c => `<td style="padding:3px">${cell(r, i, c)}</td>`).join('')}</tr>`).join('')
+      : `<tr><td colspan="${AN_COLS.length}" class="muted" style="padding:16px">No numbers yet. Connect YouTube and press Sync now.</td></tr>`);
+  if (summary) {
+    const tbl = (rows, key, label) => `<div class="card"><h4 style="margin-top:0">${label}</h4>${rows.length ? `<table><tr><th>${label.split(' ').pop()}</th><th>n</th><th>Views</th><th>Engaged %</th><th>% watched</th></tr>` +
+      rows.map(r => `<tr><td>${esc(r[key])}</td><td>${r.videos}${r.videos < 5 ? ' <span title="too few to trust">⚠️</span>' : ''}</td><td>${r.avg_views ?? '–'}</td><td>${r.avg_engaged_pct ?? '–'}</td><td>${r.avg_pct_watched ?? '–'}</td></tr>`).join('') + '</table>' : '<span class="muted">Add slot/type and views to see this.</span>'}</div>`;
+    $('#ansum').innerHTML = tbl(summary.by_slot, 'slot', 'By slot') + tbl(summary.by_type, 'type', 'By type') + `<div class="muted" style="align-self:center">⚠️ = fewer than 5 videos, a hint rather than a result.</div>`;
+  }
+}
+let SAVET = null;
+function queueSave() { clearTimeout(SAVET); SAVET = setTimeout(saveAnalytics, 700); }
+async function saveAnalytics() {        // sends the editable fields only; the server merges them into the current data
+  clearTimeout(SAVET);
+  await api('/api/analytics', {method: 'PUT', body: {rows: AN.map(r => ({id: r.id, title: r.title, project: r.project, slot: r.slot, type: r.type, notes: r.notes, viewed_pct: r.viewed_pct, drop_note: r.drop_note}))}, silent: true}).catch(() => toast('Could not save your edits.'));
+}
+async function syncNow() {
+  $('#syncbtn').disabled = true; $('#syncbtn').textContent = '⟳ Syncing…';
+  try { await saveAnalytics(); const r = await api('/api/analytics/sync', {method: 'POST'}); AN = r.rows; ANST = r.status; drawAnalytics(r.summary); drawStatus(); }
+  finally { loadAnalytics(); }
+}
+async function analyze() {
+  await saveAnalytics();
+  const j = await api('/api/analytics/analyze', {method: 'POST', body: {question: $('#anq').value}});
+  $('#anbtn').disabled = true; $('#report').style.display = 'none';
+  watch(j.id, '#anlog', async () => { $('#anbtn').disabled = false; await loadReports(); openReport(j.report); });
+}
+async function loadReports() {
+  const rs = await api('/api/reports');
+  $('#replist').innerHTML = rs.map(r => `<button class="act sec" onclick="openReport('${r.name}')">${r.name.replace('analysis-', '').replace('.md', '')}</button>`).join('') || '<span class="muted">No reports yet.</span>';
+}
+function md(t) {   // tiny markdown: headings, bullets, bold, tables
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+  const out = []; let list = false, tbl = null;
+  const close = () => { if (list) { out.push('</ul>'); list = false; } if (tbl) { out.push('</table>'); tbl = null; } };
+  for (const line of t.split('\n')) {
+    if (/^\s*\|/.test(line)) {
+      if (/^\s*\|[\s:|-]+\|?\s*$/.test(line)) continue;
+      const cells = line.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+      if (!tbl) { close(); out.push('<table>'); tbl = 1; out.push('<tr>' + cells.map(c => `<th>${inl(c)}</th>`).join('') + '</tr>'); }
+      else out.push('<tr>' + cells.map(c => `<td>${inl(c)}</td>`).join('') + '</tr>');
+      continue;
+    }
+    if (tbl) { out.push('</table>'); tbl = null; }
+    let m;
+    if ((m = line.match(/^(#{1,3})\s+(.*)/))) { close(); out.push(`<h${m[1].length + 1} style="margin:14px 0 6px">${inl(m[2])}</h${m[1].length + 1}>`); }
+    else if ((m = line.match(/^\s*(?:[-*]|\d+\.)\s+(.*)/))) { if (!list) { out.push('<ul style="margin:4px 0 4px 18px;padding:0">'); list = true; } out.push(`<li>${inl(m[1])}</li>`); }
+    else if (line.trim()) { close(); out.push(`<p style="margin:6px 0">${inl(line)}</p>`); }
+  }
+  close(); return out.join('');
+}
+async function openReport(name) {
+  try { const r = await api('/api/reports/' + name); $('#report').innerHTML = md(r.text); $('#report').style.display = ''; $('#report').scrollIntoView({behavior: 'smooth'}); } catch (e) {}
+}
+
+// ---------- schedule ----------
+async function loadSchedule(refresh) {
+  const d = await api('/api/schedule' + (refresh ? '?refresh=1' : ''));
+  const today = istDate();
+  $('#schedmeta').textContent = d.last ? `YouTube data from ${ago(d.last)}` : 'from YouTube';
+  const warn = $('#schedwarn');
+  const msgs = [];
+  if (!d.connected) msgs.push('<b>● Not connected to YouTube.</b> Open the Analytics tab and press <b>Connect YouTube</b>; then this table shows what is really live and scheduled.');
+  else if (d.error) msgs.push(`⚠ ${esc(d.error)}`);
+  if (d.planner_error) msgs.push(`📋 ${esc(d.planner_error)}`);
+  warn.style.display = msgs.length ? '' : 'none'; warn.innerHTML = msgs.join('<br>');
+  const order = {scheduled: 0, live: 1, private: 2, unlisted: 3};
+  const yt = d.youtube.slice().sort((a, b) => (order[a.state] - order[b.state]) || (a.state === 'scheduled' ? a.when.localeCompare(b.when) : b.when.localeCompare(a.when)));
+  $('#schedyt').innerHTML = `<tr><th>State</th><th>When (IST)</th><th>Title</th><th>Views</th><th></th></tr>` +
+    (yt.length ? yt.map(v => `<tr class="${v.duration_s > 180 ? 'Long' : ''}"><td>${ytBadge(v)}</td><td>${esc(v.when.slice(0, 16).replace('T', ' '))}</td><td>${esc(v.title)}</td><td>${v.state === 'live' ? v.views.toLocaleString() : '–'}</td>
+      <td><a href="${v.url}" target="_blank">watch</a> · <a href="${v.studio}" target="_blank">Studio</a></td></tr>`).join('') : `<tr><td colspan=5 class="muted" style="padding:14px">${d.connected ? 'No videos on the channel yet.' : 'Connect YouTube to see them.'}</td></tr>`);
+  $('#sched').innerHTML = `<tr><th>Date</th><th>Slot</th><th>IST</th><th>Type</th><th>Working title</th><th>Planner status</th><th>Notes</th></tr>` +
+    (d.planned.length ? d.planned.map(r => `<tr class="${r.format} ${r.date === today ? 'today' : ''}"><td>${r.day} ${r.date.slice(5)}</td><td>${esc(r.slot)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td>
+      <td>${esc(r.title)}</td><td><span class="stt planned">${esc(r.status || 'Idea')}</span></td><td class="muted">${esc(r.notes)}</td></tr>`).join('') : '<tr><td colspan=7 class="muted" style="padding:14px">Nothing left in the planner.</td></tr>');
+}
+
+// ---------- settings ----------
+async function loadCfg() { $('#cfg').value = JSON.stringify(await api('/api/config'), null, 2); }
+async function saveCfg() {
+  let v; try { v = JSON.parse($('#cfg').value); } catch (e) { return toast('That is not valid JSON: ' + e.message); }
+  const r = await api('/api/config', {method: 'PUT', body: v}); $('#cfgmsg').textContent = r.note; toast(r.note);
+}
+
+initMeta().then(loadProjects);
+</script>
+</body>
+</html>
