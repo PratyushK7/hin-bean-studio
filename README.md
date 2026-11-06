@@ -11,7 +11,7 @@ A local-first production desk for a serious Hindi explainer channel. It combines
 - YouTube channel state, scheduling/upload workflow and Analytics API integration.
 - Topic scouting from public channel uploads, outlier scoring against each source channel's own median, and original topic adaptation.
 - Atomic local JSON storage, planner integration, bounded logs, duplicate-upload protection and localhost request guards.
-- The existing line-boil rendering engine interface for 9:16 Shorts and 16:9 long-form videos.
+- The existing configurable rendering-engine interface for 9:16 Shorts and 16:9 long-form videos.
 
 ## What is different
 
