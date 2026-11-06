@@ -330,9 +330,9 @@
     arrow(branchX,620,540,720,C.green,clamp(p*3-1),5);
     arrow(branchX,620,960,720,C.amber,clamp(p*3-1.5),5);
     arrow(branchX,620,1380,720,C.red,clamp(p*3-2),5);
-    node(300,725,480,155,"OUTCOME A","SUCCESS","Receiver credited",C.green,pop(p*3-1));
-    node(720,725,480,155,"OUTCOME B","PENDING","Confirmation delayed",C.amber,pop(p*3-1.5));
-    node(1140,725,480,155,"OUTCOME C","DECLINED","Reversal may follow",C.red,pop(p*3-2));
+    node(250,725,400,155,"OUTCOME A","SUCCESS","Receiver credited",C.green,pop(p*3-1));
+    node(760,725,400,155,"OUTCOME B","PENDING","Confirmation delayed",C.amber,pop(p*3-1.5));
+    node(1270,725,400,155,"OUTCOME C","DECLINED","Reversal may follow",C.red,pop(p*3-2));
     txt("Pending ka matlab automatically lost nahi hota",960,925,22,C.cream,600,"center");
   }
   function scene14(p) {
