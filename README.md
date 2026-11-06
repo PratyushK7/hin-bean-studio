@@ -47,7 +47,6 @@ engine/                 Renderer integration contract and setup checks
 projects/               Local video projects (generated media is git-ignored)
 data/                   Local state (no channel credentials or private stats committed)
 research/               Research notes and source manifests
-templates/project/      Starter project files
 tools/                  YouTube uploader, planner builder, tests and setup checks
 ```
 
