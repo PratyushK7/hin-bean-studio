@@ -20,14 +20,19 @@ UPI ek app ya simple digital wallet nahi hai. Common bank-linked UPI payment mei
 - [ ] Script approval
 - [ ] Human voice recording at `audio/hindi-voice.wav`
 - [ ] Hindi/Hinglish font and alignment smoke test
-- [ ] Renderer-specific shot implementation
+- [x] Standalone 16-scene Canvas implementation (local renderer)
+- [ ] Install Playwright/Chromium locally and inspect the 16-scene PNG preview
 - [ ] Render and quality review
 
 ## Important
-The repo's line-boil renderer is a configurable local dependency, not bundled here. The storyboard is a plan, not a renderer-ready scene implementation. Do not run full rendering until the actual renderer API, font shaping, audio alignment and a 10–15 second test render are verified.
+The repo's original line-boil renderer is a configurable local dependency, not bundled here. To avoid inventing its unavailable drawing API, this project now includes a separate self-contained Canvas renderer under render/. It captures deterministic browser frames with Playwright and muxes your WAV narration using FFmpeg. The local renderer still needs npm dependencies and a Chromium install on your PC. Inspect the preview before full rendering; shot boundaries are estimated from script word counts and are not speech-aligned.
 
 ## Files
 - `research.md`, `sources.md`, `claims.json`
 - `script-hinglish.md`, `script.json`, `pronunciation.md`
 - `storyboard.json`, `chapters.json`
 - `thumbnail.md`, `youtube-metadata.md`, `recording-notes.md`
+
+## Local renderer
+
+See [render/README.md](render/README.md). It contains the 16 scene implementations, a local preview command and the FFmpeg render command. Record your own Hinglish narration at audio/hindi-voice.wav before creating the final video.
