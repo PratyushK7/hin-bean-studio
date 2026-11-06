@@ -37,6 +37,8 @@ jobs:
         run: |
           npm run preview -- --out ./stills
           python -c "from pathlib import Path; p=list(Path('stills').glob('scene-*.png')); print(f'{len(p)} scene previews'); assert len(p)==16"
+      - name: Install FFmpeg for mux smoke test
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Smoke-test video and audio mux
         run: |
           ffmpeg -y -hide_banner -loglevel error -f lavfi -i sine=frequency=440:duration=2 -c:a pcm_s16le /tmp/renderer-test.wav
