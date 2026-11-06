@@ -18,7 +18,8 @@ The visual design follows the repo's hindi-explainer, longform, storyboard and v
 - Node.js 20.9 or later.
 - FFmpeg and ffprobe available on PATH.
 - Your existing local Hindi Explainer Studio Python environment.
-- A real voice recording at ../audio/hindi-voice.wav for the final MP4. The full render does not substitute English TTS.
+- A generated local Hindi narration or human recording at ../audio/hindi-voice.wav for the final MP4.
+- For generated narration, see ../voice/README.md.
 
 ## Install the local renderer
 
@@ -40,7 +41,7 @@ This writes one PNG per storyboard scene to render/stills/. Inspect layout, font
 
 ## Render the full video
 
-First record your own narration and save it as:
+Generate local Hindi narration with the tool in ../voice/README.md, or record your own narration and save it as:
 
     projects/upi-behind-the-scan/audio/hindi-voice.wav
 
@@ -66,8 +67,8 @@ Direct commands above are recommended. The existing Flask dashboard has a global
 
 ## Timing and current limitations
 
-- Shot boundaries are estimated by distributing the actual recording duration according to each storyboard scene's script word count. This is a first-pass timing map, not forced alignment.
-- The project still needs your WAV recording. Final scene timing must be reviewed against your real pauses and delivery.
+- When audio/sentences.json exists, scene boundaries use the actual sentence start times recorded during local TTS synthesis.
+- If you use a human recording without matching timing sidecars, the renderer falls back to scene durations estimated from script word counts. Review those cuts against the recording.
 - No subtitles are burned in because the current Hindi aligner has not been validated. Add subtitles only after checking sentence/word timings against the recording.
 - No music or sound effects are mixed yet; the narration remains the sole audio track.
 - The visuals are code-drawn explanatory illustrations. They are not archival footage or real bank interfaces.
@@ -77,5 +78,7 @@ Direct commands above are recommended. The existing Flask dashboard has a global
 
 - index.html — fixed-size browser canvas.
 - scene.js — 16 deterministic motion scenes and drawing primitives.
-- render.mjs — Playwright frame capture and FFmpeg mux.
+- render.mjs — Playwright frame capture and FFmpeg mux; uses synthesized sentence timings when available.
+- ../voice/ — local MediaPipe/Kokoro Hindi narration generator.
+- ../script-tts.json — Devanagari pronunciation script aligned line-for-line with script.json.
 - build.py — small command adapter for the local Flask studio.
