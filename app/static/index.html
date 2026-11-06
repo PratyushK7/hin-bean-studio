@@ -515,14 +515,14 @@ async function getIdeas() {
     if (k === TKIND) drawOptions();
   }, 2000);
 }
-const LENGTH_LABEL = {30: 'About 30 seconds (~93 words) · fastest, punchy', 40: "About 40 seconds (~124 words) · the channel's usual", 50: 'About 50 seconds (~155 words)', 60: 'About 60 seconds (~186 words) · the Shorts maximum'};
-const MIN_LABEL = {5: '5 minutes (~930 words)', 7: '7 minutes (~1,300 words) · the sweet spot for this style', 9: '9 minutes (~1,670 words)', 12: '12 minutes (~2,230 words)'};
+const LENGTH_LABEL = {30: '30 seconds · concise', 40: '40 seconds · standard', 50: '50 seconds · more context', 60: '60 seconds · Shorts maximum'};
+const MIN_LABEL = {8: '8 minutes · focused documentary', 10: '10 minutes · standard long-form', 12: '12 minutes · deeper explanation', 15: '15 minutes · extended documentary'};
 function openWizard(src, i) {
   const long = TKIND === 'long', o = (src === 'pick' ? TPICK : TOPT)[TKIND][i];
-  const near = long ? ([5, 7, 9, 12].reduce((a, b) => Math.abs(b - (o.runtime_min || 7)) < Math.abs(a - (o.runtime_min || 7)) ? b : a)) : 40;
+  const near = long ? ([8, 10, 12, 15].reduce((a, b) => Math.abs(b - (o.runtime_min || 10)) < Math.abs(a - (o.runtime_min || 10)) ? b : a)) : 40;
   $('#wizbox').innerHTML = `<h2 style="margin:0 0 4px">${long ? 'Make this long video' : 'Make this video'}</h2><p class="muted" style="margin:0">${long
-      ? 'A few questions, then the agent writes the script chapter by chapter, fact-checks every claim against sources, times the chapters from the real voiceover, draws and renders the 16:9 video, and makes the upload sheet. This is a long job (it can take an hour or more of the agent\'s time); watch it in Videos.'
-      : 'A few questions, then the agent writes the script, fact-checks it, draws and renders the video, and makes the thumbnail and upload sheet. You can watch it in Videos.'}</p>
+      ? 'The agent researches and writes the Hindi script and storyboard first. You provide the Hindi narration WAV; rendering is enabled only after the Hindi alignment test is passed. Then it builds the chaptered 16:9 video and upload sheet.'
+      : 'The agent researches and prepares the Hindi script and storyboard first. You provide the Hindi narration WAV; rendering is enabled only after Hindi alignment is verified. Then it renders the hybrid explainer and prepares its thumbnail and upload sheet.'}</p>
     <label>Title</label><input type="text" id="w_title" value="${esc(o.title)}">
     <label>Length</label>${long
       ? `<select id="w_min">${META.lengths.long.map(x => x / 60).map(m => `<option value="${m}" ${m === near ? 'selected' : ''}>${MIN_LABEL[m] || m + ' minutes'}</option>`).join('')}</select>`
@@ -547,7 +547,7 @@ function closeWizard() { $('#wiz').classList.remove('on'); }
 async function makeVideo(src, i) {
   const long = TKIND === 'long';
   const o = Object.assign({}, (src === 'pick' ? TPICK : TOPT)[TKIND][i], {title: $('#w_title').value.trim()});
-  const answers = {voice: $('#w_voice').value, speed: +$('#w_speed').value, tone: $('#w_tone').value, cast: $('#w_cast').value, ending: $('#w_end').value,
+  const answers = {voice: $('#w_voice').value, tone: $('#w_tone').value, visual_mode: $('#w_visual').value, ending: $('#w_end').value,
     music: $('#w_music').checked, outro: $('#w_outro').checked, thumb_text: $('#w_thumb').value.trim(), thumb_now: long && $('#w_thumbmode').value === 'now', notes: $('#w_notes').value.trim(),
     model: $('#w_model').value, window: $('#w_window').checked, captions: long && $('#w_caps').checked,
     ...(long ? {minutes: +$('#w_min').value, structure: $('#w_struct').value} : {duration: +$('#w_dur').value})};
