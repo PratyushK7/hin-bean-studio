@@ -325,13 +325,19 @@ def run():
         p = proj_dir(name)
         if not (p / f"{name}.srt").exists(): abort(400, "this video has no .srt yet: build the video first")
         prompt = (f"Use the repo-local .claude/skills/shorts/SKILL.md and .claude/skills/hindi-script/SKILL.md on the finished long video {name}. The transcript is {p / (name + '.srt')}; the "
-                  f"chapters are {p / (name + '-chapters.txt')} and the script is {p / 'script.json'}. Find the 5 best spans of 20 to 55 seconds that survive without the video around them "
-                  "(a complete opening thought, a turn, an ending line). For each of the top 5 write: the timecodes, a NEW first line (score five options with "
-                  "Choose the clearest accurate Hindi hook, different on-screen text for the first two seconds, a loop point, and the title. "
+                  f"chapters are {p / (name + '-chapters.txt')} and the script is {p / 'script.json'}. Find the five best self-contained spans of 20 to 55 seconds that survive without the video around them "
+                  "(a complete opening thought, a turn and an ending line). For each span write timecodes, five alternative Hindi openings and the clearest accurate hook, different on-screen text for the first two seconds, a loop point and a title. "
                   "Do not crop the 16:9 animation into a vertical frame. Identify the visual elements and scenes that must be redesigned in 9:16 using the documentary visual system. "
                   f"Write it all to {p / (name + '-shorts.md')} and finish by printing the ranked list. Do not make any video and do not touch other projects.")
         return jsonify(start_agent(f"spinoffs · {name}", prompt, c.get("options_model") or None, "feed"))
     if act not in ACTIONS or not SLUG.match(name or ""): abort(400, "bad action or project")
+    if act == "video":
+        p = proj_dir(name)
+        audio = p / "audio" / "hindi-voice.wav"
+        if not audio.is_file():
+            abort(400, f"Add the human Hindi recording at {audio} before rendering.")
+        if not c.get("hindi_alignment_ready", False):
+            abort(400, "Hindi alignment has not been verified. Complete the smoke test and set hindi_alignment_ready=true in Settings before rendering.")
     tool, args = ACTIONS[act]
     cmd = [c["python"], c[tool], args[0], name] + args[1:]
     if tool == "uploader" and act != "comment":
