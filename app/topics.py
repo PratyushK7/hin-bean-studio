@@ -3,7 +3,7 @@
 1. Finds what is working on other channels in the same category: public listings (yt-dlp, no login), each video scored as a
    multiple of its own channel's median views, so a big channel's normal day doesn't look like a hit. Shorts and long videos
    have separate pools and separate medians.
-2. "Get 3 ideas": a sample of the best outliers goes to the agent, which adapts five of them into ORIGINAL topics for this
+2. "Get 3 ideas": a sample of the best outliers goes to the agent, which adapts the best candidates into THREE original Hindi topics for this
    channel (topic and format borrowed, never the script or title). "Re-roll" samples a fresh set, skipping sources already shown.
    data/picks.json holds hand-researched topics (with a brief file) that show above the generated ones.
 3. A chosen topic + the answers from the form become one agent job. A Short is made with the hindi-explainer skill (9:16); a long video with
@@ -129,7 +129,7 @@ def register(app, ROOT, cfg, start_job, JOBS, start_agent=None):
             finally:
                 s.update(refreshing=False, progress="")
 
-    # ---------- 2. five ideas, and re-roll ----------
+    # ---------- 2. three ideas, and re-roll ----------
     def already_made():
         c = cfg(); names = []
         for sheet in Path(c["projects_dir"]).glob("*/*-youtube.txt"):
@@ -296,7 +296,6 @@ Do not browse beyond the topic candidates for idea generation; mark every claim 
         title = clean(t.get("title"), 120)
         if not title: abort(400, "no topic")
         voice = a.get("voice") if a.get("voice") in VOICE_IDS else "own_recording"
-        speed = round(number(a.get("speed"), 1.0, 0.9, 1.15), 2)
         dur = int(number(a.get("minutes"), 10, 8, 15) * 60) if kind == "long" else int(number(a.get("duration"), 40, 25, 60))
         slug = slug_for(title)
         (Path(c["projects_dir"]) / slug).mkdir(parents=True, exist_ok=True)     # reserve the name: a second click can't pick it too
@@ -325,9 +324,9 @@ PROJECT NAME: {slug}\nPYTHON: {c['python']}\nENGINE SCRIPT: {c['engine']}\nPROJE
 
 THE USER'S ANSWERS (follow them):
 - {length_instructions(dur)}
-- Voice: {voice}. The required file is {slug}/audio/hindi-voice.wav. No TTS fallback is exposed in this build.\n- Hindi alignment readiness: {"VERIFIED in Settings. Use the configured renderer/aligner with the human Hindi WAV and inspect the result." if c.get("hindi_alignment_ready") else "NOT VERIFIED. Complete the Hindi voice/alignment smoke test in engine/README.md and set hindi_alignment_ready=true. Until then, stop after research, Hindi script and storyboard; do not invoke renderer voice/alignment or full rendering."}\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
+- Narration: {voice}. The required file is {slug}/audio/hindi-voice.wav. No TTS fallback is exposed in this build.\n- Hindi alignment readiness: {"VERIFIED in Settings. Use the configured renderer/aligner with the human Hindi WAV and inspect the result." if c.get("hindi_alignment_ready") else "NOT VERIFIED. Complete the Hindi voice/alignment smoke test in engine/README.md and set hindi_alignment_ready=true. Until then, stop after research, Hindi script and storyboard; do not invoke renderer voice/alignment or full rendering."}\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
 - Tone: {clean(a.get('tone') or 'serious, clear, composed and engaging', 80)}
-- Visual treatment: use the documentary visual system; no recurring mascot characters. Use visual metaphors only when they clarify a mechanism.
+- Visual approach: {clean(a.get('visual_mode') or 'Hybrid documentary: code-generated graphics plus sourced visuals where useful', 120)}. Use code-generated graphics to explain mechanisms, data and relationships; use sourced documentary visuals only when they add genuine evidence or context. No recurring mascot characters.
 - Ending: {clean(a.get('ending') or 'a concise evidence-based conclusion that resolves the opening question', 80)}
 - Background music: {'on, and it follows the script: musicMood() follows the narrative tone and evidence (if supported by the renderer)' if a.get('music', True) else 'off (pass --no-music to build.py video)'}
 - Channel outro: {'appended' if a.get('outro', True) else 'left off (pass --no-outro to build.py video)'}
