@@ -29,7 +29,7 @@ def test_topics() -> None:
     assert topics.classify("What if the Sun disappeared?") == "Scenario"
     assert topics.length_instructions(45).find("Hindi narration") >= 0
     assert "16:9" in topics.length_instructions(600)
-    assert topics.VOICE_IDS == ["own_recording", "hindi_tts"]
+    assert topics.VOICE_IDS == ["own_recording"]
     assert topics.LENGTHS["long"][0] == 480
 
 def test_analytics() -> None:
