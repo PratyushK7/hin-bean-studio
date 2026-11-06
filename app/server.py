@@ -324,7 +324,7 @@ def run():
         prompt = (f"Use the repo-local .claude/skills/shorts/SKILL.md and .claude/skills/hindi-script/SKILL.md on the finished long video {name}. The transcript is {p / (name + '.srt')}; the "
                   f"chapters are {p / (name + '-chapters.txt')} and the script is {p / 'script.json'}. Find the 5 best spans of 20 to 55 seconds that survive without the video around them "
                   "(a complete opening thought, a turn, an ending line). For each of the top 5 write: the timecodes, a NEW first line (score five options with "
-                  "~/.claude/skills/yt-script/hookscore.py and keep the best, showing the score), different on-screen text for the first two seconds, a loop point, and the title. "
+                  "Choose the clearest accurate Hindi hook, different on-screen text for the first two seconds, a loop point, and the title. "
                   "Do not crop the 16:9 animation into a vertical frame. Identify the visual elements and scenes that must be redesigned in 9:16 using the documentary visual system. "
                   f"Write it all to {p / (name + '-shorts.md')} and finish by printing the ranked list. Do not make any video and do not touch other projects.")
         return jsonify(start_agent(f"spinoffs · {name}", prompt, c.get("options_model") or None, "feed"))
