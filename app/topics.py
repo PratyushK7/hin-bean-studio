@@ -297,7 +297,7 @@ Do not browse beyond the topic candidates for idea generation; mark every claim 
         if not title: abort(400, "no topic")
         voice = a.get("voice") if a.get("voice") in VOICE_IDS else "own_recording"
         speed = round(number(a.get("speed"), 1.0, 0.9, 1.15), 2)
-        dur = int(number(a.get("minutes"), 7, 4, 15) * 60) if kind == "long" else int(number(a.get("duration"), 40, 25, 60))
+        dur = int(number(a.get("minutes"), 10, 8, 15) * 60) if kind == "long" else int(number(a.get("duration"), 40, 25, 60))
         slug = slug_for(title)
         (Path(c["projects_dir"]) / slug).mkdir(parents=True, exist_ok=True)     # reserve the name: a second click can't pick it too
         src = t.get("inspired_by") or {}
