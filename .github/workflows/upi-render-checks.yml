@@ -32,7 +32,8 @@ jobs:
         run: |
           node --check scene.js
           node --check render.mjs
-          python -m py_compile build.py
+          python -m py_compile build.py ../voice/generate_audio.py ../voice/download_model.py
+          python -c "import json; a=json.load(open('../script.json', encoding='utf-8')); b=json.load(open('../script-tts.json', encoding='utf-8')); assert len(a)==len(b)==83; print(f'{len(a)} aligned narration lines')"
       - name: Render all 16 scene previews
         run: |
           npm run preview -- --out ./stills
