@@ -1,4 +1,4 @@
-"""Analytics for Bean Studio: numbers pulled from YouTube by the server, and the agent's report on them.
+"""Analytics for Hindi Explainer Studio: numbers pulled from YouTube and evidence-led channel analysis.
 
 register(app, ROOT, cfg, start_job) adds /api/analytics*, /api/reports*.
 Data lives in data/analytics.json, reports in reports/analysis-<date>.md (both tracked in git, both private).
@@ -154,7 +154,7 @@ Rules:
 - Use drop_s and the retention curve to say which line or shot lost people: read the project's web/words.js or script.json to see what was said at that second, and say what to change in the next script.
 - Slot and type were inferred from publish time and the planner; if one looks wrong for a row, say so rather than trusting it.
 
-- Read the retention curve the way the yt-retention skill (~/.claude/skills/yt-retention/SKILL.md) does: a HOOK LEAK (what is lost in the first 30 seconds; under 25% is healthy), CLIFFS (single steep drops, tied to what was being said at that second) and a SLIDE (the steady bleed across the middle: pacing, fixed by cutting). Name the single biggest leak and one change for it; if the hook leak is healthy and the slide is flat, say the video is fine and the problem is packaging (yt-package).
+- Read the retention curve directly: distinguish an early drop, an isolated cliff and a gradual decline. Do not apply universal retention thresholds; compare like-for-like formats, runtimes and sample sizes. Tie any observed drop to the actual Hindi narration or scene at that timestamp. Recommend a script or edit change only when the data supports it.
 
 Report structure:
 # Analysis <date>
@@ -162,7 +162,7 @@ Report structure:
 ## What is probably noise
 ## Slot A vs slot B (and India vs US if the geo column has data)
 ## Video types: keep / double / drop
-## Hook and retention: fixes for the next scripts
+## Hook and retention: fixes for the next Hindi scripts
 ## Decisions (max 3; each has the change, the number that justifies it, and how to test it)
 ## Next checkpoint (what to collect and when)
 Only write the report. Do not edit the planner, the skills or any video. Finish by printing the Decisions section."""
