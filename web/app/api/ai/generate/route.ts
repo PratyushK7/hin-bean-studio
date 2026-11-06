@@ -5,14 +5,14 @@ import { hasValidSession } from "@/lib/auth";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const OPERATIONS = ["ideas", "research", "script", "storyboard", "package", "revise"] as const;
+const OPERATIONS = ["ideas", "research", "script", "storyboard", "visual_code", "package", "revise"] as const;
 type Operation = (typeof OPERATIONS)[number];
 
 const OPERATION_GUIDANCE: Record<Operation, string> = {
   ideas: "Generate original video concepts. For each, state the central question, audience promise, narrative engine, surprising insight, visual potential and why it deserves a video. Rank the strongest ideas.",
   research: "Create a research brief. You MUST use web search. Separate established facts, disputed or uncertain points, and open questions. Cite source URLs next to factual claims and include publisher and publication date when available. Prefer primary sources, official datasets, peer-reviewed research and reputable reporting. Never invent citations or statistics.",
   script: "Write a narration-ready documentary explainer script. Start with a concrete scene or question, build a causal explanation, explain necessary terms, include counterpoints and uncertainty, then land a clear conclusion. Do not pad. Make spoken language natural rather than essay-like.",
-  storyboard: "Turn the supplied script or brief into a scene-by-scene hybrid storyboard. Prefer original code-generated diagrams, charts, maps, timelines and mechanism animations when these clarify the idea. For every scene provide narration cue, visual, motion, on-screen text, assets/data required and approximate duration. Do not invent factual visuals.",
+  storyboard: "Turn the supplied script or brief into a scene-by-scene hybrid storyboard. Prefer original code-generated diagrams, charts, maps, timelines and mechanism animations when these clarify the idea. For every scene provide narration cue, visual, motion, on-screen text, assets/data required and approximate duration. Do not invent factual visuals.",\n  visual_code: "Generate a complete, self-contained HTML motion-graphics scene as raw HTML source only (no Markdown fences and no prose outside code). Use inline CSS, SVG and vanilla JavaScript; no external libraries, CDNs, network calls, cookies, localStorage, filesystem access, subprocesses or credentials. Make it deterministic, resolution-aware and suitable for capture by a local Playwright/FFmpeg workflow. Include clear comments, a fixed-duration timeline, accessible labels where practical, and a visible fallback when animation is disabled. Use fictional/sample values unless sourced data is supplied. If the user asks for APIs from a local renderer not documented in the prompt, do not invent them; output a standalone HTML scene and state integration assumptions in HTML comments."
   package: "Create a YouTube packaging set: title options, thumbnail concepts, description, chapter suggestions, pinned comment and search phrases. Keep claims accurate and avoid clickbait that overpromises.",
   revise: "Revise the supplied material to match the requested direction. Preserve accurate claims and useful nuance. Explain major structural changes briefly, then provide the complete revised version.",
 };
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         "Never fabricate sources, quotes, datasets, dates, statistics or research findings.",
         "For web research, distinguish source-backed facts from interpretation and uncertainty. Provide direct URLs.",
         "For scripts, write narration that sounds natural when spoken aloud. Respect the selected language and script.",
-        "For storyboards, use the hybrid visual approach: documentary storytelling plus code-generated motion graphics and explanatory diagrams.",
+        "For storyboards, use the hybrid visual approach: documentary storytelling plus code-generated motion graphics and explanatory diagrams.",\n        "For generated visual code, do not assume access to the local machine. Return a self-contained and inspectable browser scene. Never include code that accesses the network, credentials, filesystem, shell, or operating system.",
         OPERATION_GUIDANCE[task],
       ].join("\n\n"),
       input,
