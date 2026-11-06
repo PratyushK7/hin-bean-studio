@@ -10,7 +10,7 @@
 Reads projects\\<project>\\:
     <project>.mp4, <project>.srt, <project>-thumbnail.png, <project>-youtube.txt
 and sets: title, description, tags, category Education, Hindi, not made for kids, altered content No,
-private + publishAt (scheduled), custom thumbnail, English captions from the .srt.
+private + publishAt (scheduled), custom thumbnail, Hindi captions from the .srt.
 Writes <project>-upload.json with the video id, and refuses to upload the same project twice (--force overrides).
 
 Uses the official YouTube Data API v3 with your own OAuth client (client_secret.json in tools\\.secrets\\).
@@ -30,7 +30,7 @@ TOKEN = SECRETS / "token.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl",
           "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/yt-analytics.readonly"]   # the last two: Bean Studio reads your numbers
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
-SLOTS = {"A": "19:00", "B": "12:00", "Long": "20:30"}   # IST, same as bean-planner.xlsx
+SLOTS = {"A": "19:00", "B": "12:00", "Long": "20:30"}   # IST, same as the local planner workbook
 EDUCATION = "27"
 
 
@@ -120,7 +120,7 @@ def cmd_upload(a):
     print(f"  title      {meta['title']}")
     print(f"  desc       {meta['description'].splitlines()[0][:90]}  (+{len(meta['description'].splitlines()) - 1} lines)")
     print(f"  tags       {len(meta['tags'])}: {', '.join(meta['tags'])[:90]}...")
-    print(f"  settings   Education, English, made for kids: {meta['kids']}, altered content: {meta['synthetic']}")
+    print(f"  settings   Education, Hindi, made for kids: {meta['kids']}, altered content: {meta['synthetic']}")
     print(f"  files      {files['video'].name}, {files['thumb'].name}, {files['srt'].name}")
     if a.dry_run:
         print("\n  dry run - nothing sent"); return
@@ -165,9 +165,9 @@ def finish_upload(a, yt, files, resp, meta, t, log):
     except Exception as e:
         print(f"  thumbnail  FAILED ({e}). Custom thumbnails need a phone-verified channel; set it in Studio.")
     try:
-        yt.captions().insert(part="snippet", body={"snippet": {"videoId": vid, "language": "en", "name": "English", "isDraft": False}},
+        yt.captions().insert(part="snippet", body={"snippet": {"videoId": vid, "language": "hi", "name": "Hindi", "isDraft": False}},
                              media_body=MediaFileUpload(str(files["srt"]), mimetype="application/octet-stream")).execute()
-        print("  captions   English .srt added")
+        print("  captions   Hindi .srt added")
     except Exception as e:
         print(f"  captions   FAILED ({e}). Upload the .srt in Studio.")
     got = yt.videos().list(part="status", id=vid).execute()["items"][0]["status"]
