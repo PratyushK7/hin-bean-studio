@@ -1,0 +1,41 @@
+# OAuth secrets
+tools/.secrets/
+.secrets/
+*.token
+client_secret*.json
+token.json
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local config and runtime data
+config.json
+data/topic-*.json
+data/youtube-videos.json
+data/analytics-meta.json
+data/make/
+data/runs.json
+data/analytics.json
+
+# Generated video and audio
+projects/*/audio/
+projects/*/stills/
+projects/*/seg/
+projects/*/web/engine/
+projects/*/web/index.html
+projects/*/web/thumb.html
+projects/*/cues.json
+projects/*/*.mp4
+projects/*/*.wav
+projects/*/*.mp3
+projects/*/*.png
+projects/*/*.jpg
+projects/*/*.lock
+projects/*/*-upload.json
+
+# Research downloads and caches
+research/cache/
+research/downloads/
