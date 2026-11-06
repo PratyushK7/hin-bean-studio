@@ -325,7 +325,7 @@ PROJECT NAME: {slug}\nPYTHON: {c['python']}\nENGINE SCRIPT: {c['engine']}\nPROJE
 
 THE USER'S ANSWERS (follow them):
 - {length_instructions(dur)}
-- Voice: {voice}. For own_recording, the required file is {slug}/audio/hindi-voice.wav. Use no TTS fallback. Verify Hindi alignment support; never assume English voice timing applies to Hindi.\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
+- Voice: {voice}. The required file is {slug}/audio/hindi-voice.wav. No TTS fallback is exposed in this build.\n- Hindi alignment readiness: {"VERIFIED in Settings. Use the configured renderer/aligner with the human Hindi WAV and inspect the result." if c.get("hindi_alignment_ready") else "NOT VERIFIED. Complete the Hindi voice/alignment smoke test in engine/README.md and set hindi_alignment_ready=true. Until then, stop after research, Hindi script and storyboard; do not invoke renderer voice/alignment or full rendering."}\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
 - Tone: {clean(a.get('tone') or 'serious, clear, composed and engaging', 80)}
 - Visual treatment: use the documentary visual system; no recurring mascot characters. Use visual metaphors only when they clarify a mechanism.
 - Ending: {clean(a.get('ending') or 'a concise evidence-based conclusion that resolves the opening question', 80)}
