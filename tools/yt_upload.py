@@ -1,4 +1,4 @@
-"""yt_upload.py - upload a finished projects Short to YouTube, fill every field from its upload sheet, schedule it.
+"""yt_upload.py - upload a finished Hindi explainer video to YouTube, fill every field from its upload sheet, schedule it.
 
     .venv\\Scripts\\python yt_upload.py auth                                  sign in once (opens the browser)
     .venv\\Scripts\\python yt_upload.py upload <project> --slot A --date 2026-11-05 [--dry-run]
@@ -22,13 +22,13 @@ Not possible through the API, so do these by hand in Studio: pin the comment and
 import argparse, datetime as dt, json, os, re, sys, time
 from pathlib import Path
 
-# the projects folder: Bean Studio passes it in BEAN_PROJECTS_DIR; run by hand it is the projects folder next to tools/
+# the projects folder: the studio passes it in BEAN_PROJECTS_DIR; run by hand it is the projects folder next to tools/
 ROOT = Path(os.environ.get("BEAN_PROJECTS_DIR") or Path(__file__).resolve().parent.parent / "projects")
 SECRETS = Path(__file__).resolve().parent / ".secrets"
 CLIENT = SECRETS / "client_secret.json"
 TOKEN = SECRETS / "token.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl",
-          "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/yt-analytics.readonly"]   # the last two: Bean Studio reads your numbers
+          "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/yt-analytics.readonly"]   # the last two: the studio reads channel data
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 SLOTS = {"A": "19:00", "B": "12:00", "Long": "20:30"}   # IST, same as the local planner workbook
 EDUCATION = "27"
