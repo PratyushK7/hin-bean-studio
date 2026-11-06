@@ -7,7 +7,7 @@ import json, re, time
 from pathlib import Path
 from flask import abort, jsonify, request
 
-TRIGGERS = ("Curiosity", "Fear", "Shock", "Stakes", "Mystery", "Before / after", "Absurd")
+TRIGGERS = ("Curiosity", "Scale", "Stakes", "Mystery", "Before / after", "Comparison", "Revelation")
 ENGINE_SKILL = ".claude/skills/thumbnail"
 
 
@@ -86,7 +86,7 @@ Read: {p / 'script.json'} (the whole voiceover), {p / (name + '-youtube.txt')} (
 
 Read {THUMB_SKILL} first and follow its rules for the words, the picture and the tests. The picture is {size}.
 
-Then write THREE different thumbnail ideas, each built on a different click trigger from: {', '.join(TRIGGERS)}. At least one leans on fear or loss the video honestly delivers on, and at least one on curiosity. Be unbiased and strict: rank them, best first.
+Then write THREE different thumbnail ideas, each built on a different click trigger from: {', '.join(TRIGGERS)}. At least one communicates a genuine consequence or stake the video supports, and at least one uses curiosity. Avoid fear-bait and shock-bait. Be unbiased and strict: rank them, best first.
 
 Write a JSON array of exactly 3 objects to {out} and nothing else on disk (no other file changes). Each object:
 {{"name": "3 to 6 word label", "trigger": one of the triggers, "words": "the on-image words, as the skill says", "concept": "the whole picture in two sentences: what is drawn, where, doing what", "subject": "the one dominant visual subject", "face": "which human subject or visual focal point, and what emotion", "why": "one sentence: what makes a stranger click and why the video pays it off", "risk": "one sentence: how this could mislead or fail, and how it is avoided"}}
