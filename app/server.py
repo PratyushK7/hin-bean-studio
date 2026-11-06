@@ -232,7 +232,7 @@ def summary(p):
     words = len(" ".join(script).split()) if isinstance(script, list) else 0
     pj = store.read(p / "project.json", {}) or {}
     kind = (store.read(ROOT / "data" / "make" / f"{n}.json", {}) or {}).get("kind") or ("long" if pj.get("format") == "wide" else "short")
-    if kind == "long":     # a 16:9 video with chapters and sources, made with the line-boil-wide skill
+    if kind == "long":     # a 16:9 documentary video with chapters and sources
         steps = {"script": words > 20, "sources": has("-sources.md"), "chapters": has("-chapters.txt"), "video": has(".mp4"), "srt": has(".srt"),
                  "thumbnail": has("-thumbnail.png"), "sheet": has("-youtube.txt"), "uploaded": bool(upinfo)}
     else:
