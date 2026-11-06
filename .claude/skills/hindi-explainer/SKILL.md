@@ -9,7 +9,7 @@ A clear question, researched and explained in natural Hindi, becomes a finished 
 
 ## Editorial identity
 
-- **Language:** Hindi-first. Write narration in Devanagari. Use standard English technical terms in Latin script only when that is genuinely how an educated Hindi speaker would say them or when translation would reduce clarity. Define unfamiliar terms the first time.
+- **Language:** Hindi-first. Default to Devanagari, but follow an explicit project preference for Hinglish. This first project uses natural Roman-script Hinglish throughout. Use standard English technical terms in Latin script only when that is genuinely how an educated Hindi speaker would say them or when translation would reduce clarity. Define unfamiliar terms the first time.
 - **Tone:** composed, intelligent, curious, precise and human. Never sound like a news anchor shouting headlines, a coaching-centre lecturer, a conspiracy channel or a translated textbook.
 - **Promise:** viewers should understand a mechanism, event, system or argument more clearly than before. Do not merely list facts.
 - **Audience:** curious Hindi-speaking general audience. Assume no specialist background; do not assume low intelligence.
