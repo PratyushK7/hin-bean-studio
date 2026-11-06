@@ -1,0 +1,111 @@
+[
+  {
+    "id": "C01",
+    "claim": "UPI is an instant payment system developed by NPCI and built over IMPS infrastructure.",
+    "type": "fact",
+    "sources": [
+      "S01",
+      "S03"
+    ],
+    "status": "use",
+    "caveat": "Do not depict physical money moving through a cable."
+  },
+  {
+    "id": "C02",
+    "claim": "NPCI operates/co-ordinates the UPI network and routes transaction messages between participants.",
+    "type": "fact",
+    "sources": [
+      "S02",
+      "S03"
+    ],
+    "status": "use",
+    "caveat": "'Switch/routing layer' is an accessible analogy; avoid overclaiming internal implementation."
+  },
+  {
+    "id": "C03",
+    "claim": "The remitter bank authenticates the UPI PIN and debits the sender's account in the common bank-linked flow.",
+    "type": "fact",
+    "sources": [
+      "S02",
+      "S01"
+    ],
+    "status": "use",
+    "caveat": "Scope to a regular bank-account UPI payment."
+  },
+  {
+    "id": "C04",
+    "claim": "The beneficiary bank credits the receiving account.",
+    "type": "fact",
+    "sources": [
+      "S02"
+    ],
+    "status": "use",
+    "caveat": "Exact messaging and exception handling vary."
+  },
+  {
+    "id": "C05",
+    "claim": "A third-party UPI app is not the same thing as the underlying bank account or UPI network.",
+    "type": "interpretation grounded in participant roles",
+    "sources": [
+      "S02",
+      "S03"
+    ],
+    "status": "use",
+    "caveat": "Some apps are bank apps; avoid implying identical corporate structures."
+  },
+  {
+    "id": "C06",
+    "claim": "UPI is designed to be available 24x7 to customers.",
+    "type": "fact",
+    "sources": [
+      "S01",
+      "S03"
+    ],
+    "status": "use",
+    "caveat": "Outages and bank/network issues can still occur."
+  },
+  {
+    "id": "C07",
+    "claim": "Customer-facing payment confirmation and interbank settlement/reconciliation are distinct processes.",
+    "type": "technical interpretation",
+    "sources": [
+      "S03",
+      "S05"
+    ],
+    "status": "use",
+    "caveat": "Explain at a high level."
+  },
+  {
+    "id": "C08",
+    "claim": "Pending or failed transactions can involve technical declines or delayed confirmation; universal instant refund promises are unsafe.",
+    "type": "fact",
+    "sources": [
+      "S01",
+      "S04",
+      "S06"
+    ],
+    "status": "use",
+    "caveat": "No fixed refund SLA in narration."
+  },
+  {
+    "id": "C09",
+    "claim": "UPI PIN authorizes the sender-side bank transaction and should never be shared.",
+    "type": "fact/security guidance",
+    "sources": [
+      "S01"
+    ],
+    "status": "use",
+    "caveat": "Distinguish sending money from approving a collect request."
+  },
+  {
+    "id": "C10",
+    "claim": "A QR code or UPI ID helps identify the payment destination but does not prove the recipient is trustworthy.",
+    "type": "practical safety guidance",
+    "sources": [
+      "S01",
+      "S02"
+    ],
+    "status": "use",
+    "caveat": "Not a claim about QR cryptography."
+  }
+]
