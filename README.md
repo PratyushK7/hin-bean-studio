@@ -21,6 +21,12 @@ A local-first production desk for a serious Hindi explainer channel. It combines
 - Primary-source research, claim-level verification, uncertainty labels and source notes are required before script approval.
 - Long-form storytelling is built around a central question, causal explanation, evidence, counterpoints and a clear conclusion.
 
+## Hosted AI workspace
+
+A separate Next.js app now lives in [web/](web/). Deploy it on Vercel with the repository root directory set to `web/`. It provides a password-protected workspace backed by the OpenAI Responses API for ideas, web-searched research briefs, scripts, storyboards, revisions and YouTube packaging. See [web/README.md](web/README.md) for environment variables and deployment steps.
+
+The hosted app is the cloud thinking layer only. It does not get access to your PC. Keep the existing Flask dashboard, project files, voice recordings, animation engine, FFmpeg and renders on your local computer. The hosted app exports a JSON handoff. A secure outbound local-agent bridge is a later integration, not part of this first web release.
+
 ## Requirements
 
 - Windows is currently the easiest supported path because `start.bat` uses Windows process and file APIs.
@@ -48,6 +54,7 @@ projects/               Local video projects (generated media is git-ignored)
 data/                   Local state (no channel credentials or private stats committed)
 research/               Research notes and source manifests
 tools/                  YouTube uploader, planner builder, tests and setup checks
+web/                    Deployable Next.js + OpenAI cloud workspace
 ```
 
 ## Safety and privacy
