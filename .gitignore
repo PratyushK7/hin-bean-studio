@@ -43,3 +43,8 @@ research/downloads/
 # Local Canvas render dependencies and preview frames
 projects/*/render/node_modules/
 projects/*/render/stills/
+
+# Local Hindi TTS environments and model weights
+projects/*/voice/.venv/
+projects/*/voice/models/
+projects/*/voice/cache/
