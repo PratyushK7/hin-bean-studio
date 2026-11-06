@@ -45,9 +45,9 @@ function usage() {
   ].join("\n"));
 }
 
-function resolveProjectPath(value) {
+function resolveRenderPath(value) {
   if (!value) return null;
-  return path.isAbsolute(value) ? value : path.resolve(PROJECT_DIR, value);
+  return path.isAbsolute(value) ? value : path.resolve(RENDER_DIR, value);
 }
 
 function commandOutput(command, argv) {
@@ -150,7 +150,7 @@ async function openPage() {
 }
 
 async function renderStills(options, plan) {
-  const outputDir = resolveProjectPath(options.output || path.join("render","stills"));
+  const outputDir = resolveRenderPath(options.output || "stills");
   await mkdir(outputDir, { recursive: true });
   const { browser, page, server } = await openPage();
   try {
@@ -171,13 +171,13 @@ async function renderStills(options, plan) {
 
 async function renderVideo(options, plan) {
   if (!options.audio) throw new Error("Final rendering requires --audio ../audio/hindi-voice.wav. Record your narration first.");
-  const audio = resolveProjectPath(options.audio);
+  const audio = resolveRenderPath(options.audio);
   try { await stat(audio); } catch { throw new Error("Voice recording not found: " + audio); }
   const duration = audioDuration(audio);
   const fps = Math.round(options.fps);
   if (!Number.isFinite(fps) || fps < 12 || fps > 60) throw new Error("--fps must be between 12 and 60.");
   if (!Number.isFinite(options.quality) || options.quality < 60 || options.quality > 100) throw new Error("--quality must be between 60 and 100.");
-  const output = resolveProjectPath(options.output || path.join(PROJECT_DIR,path.basename(PROJECT_DIR)+".mp4"));
+  const output = options.output ? resolveRenderPath(options.output) : path.join(PROJECT_DIR,path.basename(PROJECT_DIR)+".mp4");
   await mkdir(path.dirname(output), { recursive:true });
   const timeline = timelineFor(plan.scenes,duration);
   const fpsCount = Math.ceil(duration*fps);
