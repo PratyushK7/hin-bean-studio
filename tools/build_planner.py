@@ -49,7 +49,7 @@ for row in range(4, 204):
 for rng, values in [
     ("B4:B203", '"A,B,Long"'),
     ("D4:D203", '"Short,Long"'),
-    ("E4:E203", '"Explainer,Case study,Why,Myth test,History,Timeline,Versus,Ranking,How it works,Investigation,Analysis"'),
+    ("E4:E203", '"Scenario,Myth test,Why,True story,Versus,Ranking,Timeline,Paradox,Puzzle,How it works,Superlative,How many,Map/scale,Explainer"'),
     ("G4:G203", '"Idea,Researching,Scripted,Approved,Rendered,Ready,Scheduled,Posted,Skipped"')
 ]:
     dv = DataValidation(type="list", formula1=values, allow_blank=True)
@@ -69,14 +69,20 @@ types.append(["Format", "Editorial structure", "Visual opportunities", "Evidence
 for c in types[1]:
     c.font = Font(bold=True, color=WHITE); c.fill = PatternFill("solid", fgColor=NAVY)
 type_rows = [
-    ("Why", "Question → common explanation → mechanism → implications", "Causal diagrams, cutaways, timelines", "Primary evidence for key mechanisms"),
-    ("Case study", "Context → decision/event → evidence → outcome → lesson", "Maps, timelines, documents, data", "First-party documents and multiple independent sources"),
+    ("Scenario", "Counterfactual premise → constraints → plausible consequences", "System simulation, causal chain, timeline", "State assumptions and distinguish inference from fact"),
     ("Myth test", "Claim → strongest evidence → what it gets right/wrong", "Side-by-side comparisons, labels", "Trace the original claim and disconfirming evidence"),
-    ("History", "Context → trigger → turning points → consequence", "Maps, archival material, timelines", "Primary and scholarly historical sources"),
-    ("Timeline", "Starting state → sequence → turning points → current state", "Animated timeline and maps", "Dated records and corroboration"),
+    ("Why", "Question → common explanation → mechanism → implications", "Causal diagrams, cutaways, timelines", "Primary evidence for key mechanisms"),
+    ("True story", "Context → trigger → turning points → consequence", "Maps, archival material, timelines", "Primary records and scholarly corroboration"),
     ("Versus", "Comparable criteria → evidence by criterion → qualified verdict", "Split-screen charts and diagrams", "Comparable measures and clear caveats"),
     ("Ranking", "Define metric → explain entries → limitations", "Ranked visual scale and data cards", "Transparent dataset and ranking method"),
+    ("Timeline", "Starting state → sequence → turning points → current state", "Animated timeline and maps", "Dated records and corroboration"),
+    ("Paradox", "Apparent contradiction → hidden condition → resolution", "System diagrams, comparison, animation", "Verify the apparent contradiction and its limits"),
+    ("Puzzle", "Question → evidence → pause → reasoned answer", "Visual clues, diagrams and reveal", "A fair solution grounded in evidence"),
     ("How it works", "Problem → components → process → failure modes", "Exploded diagrams and process animation", "Technical documentation or peer-reviewed sources"),
+    ("Superlative", "Define measure → compare candidates → qualify claim", "Scale, ranked comparison, map", "A defensible definition and complete enough data"),
+    ("How many", "Define quantity → calculate → show assumptions", "Counters, scale model, animated chart", "Reproducible calculation and units"),
+    ("Map/scale", "Orient viewer → reveal geography or proportion → implication", "Sourced map, common scale, motion graphic", "Correct boundary/source data and transparent scale"),
+    ("Explainer", "Define system → connect components → show outcome", "System diagram, flow and documentary visuals", "Reliable source coverage for every key link"),
 ]
 for row in type_rows: types.append(row)
 for i,w in enumerate([18,54,48,52],1): types.column_dimensions[get_column_letter(i)].width=w
