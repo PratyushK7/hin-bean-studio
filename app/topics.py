@@ -32,7 +32,7 @@ FMT = [("Scenario", r"^what if|^what would happen|^what happens"), ("How many", 
        ("Myth test", r"^(is|are|can|could|does|do)\b|myth|actually|really|truth")]
 OFF_BRAND = re.compile(r"porn|adult content", re.I)  # do not filter serious politics, conflict or history
 STOP = set("what if you your the a an of to how would it take and is are do does why can could in on for with from at".split())
-VOICES = [["own_recording", "Own Hindi voice recording (recommended)"], ["hindi_tts", "Configured Hindi TTS (only if installed and tested)"]]
+VOICES = [["own_recording", "Own Hindi voice recording (recommended)"]]
 VOICE_IDS = [v[0] for v in VOICES]
 LENGTHS = {"short": [30, 40, 50, 60], "long": [480, 600, 720, 900]}       # seconds
 WORDS_PER_SECOND = 2.4                                                       # rough script planning only; Hindi audio timing is authoritative
@@ -325,7 +325,7 @@ PROJECT NAME: {slug}\nPYTHON: {c['python']}\nENGINE SCRIPT: {c['engine']}\nPROJE
 
 THE USER'S ANSWERS (follow them):
 - {length_instructions(dur)}
-- Voice: {voice}. For own_recording, the required file is {slug}/audio/hindi-voice.wav. For hindi_tts, use only the configured, auditioned Hindi TTS. Verify Hindi alignment support; never assume English voice timing applies to Hindi.\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
+- Voice: {voice}. For own_recording, the required file is {slug}/audio/hindi-voice.wav. Use no TTS fallback. Verify Hindi alignment support; never assume English voice timing applies to Hindi.\n- Voice gate: if own_recording is selected and the Hindi WAV is missing, stop after the research, Hindi script and storyboard. Do not invoke the renderer's default TTS, do not fabricate word timings, and do not render the full video. Report the exact audio path needed.
 - Tone: {clean(a.get('tone') or 'serious, clear, composed and engaging', 80)}
 - Visual treatment: use the documentary visual system; no recurring mascot characters. Use visual metaphors only when they clarify a mechanism.
 - Ending: {clean(a.get('ending') or 'a concise evidence-based conclusion that resolves the opening question', 80)}
