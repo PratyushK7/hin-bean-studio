@@ -71,3 +71,67 @@ The renderer uses sentence timings when audio/sentences.json is present. If you 
 ## Review before publishing
 
 Listen to the whole narration and check UPI, NPCI, IMPS, PSP, PhonePe, Google Pay, remitter and beneficiary. Edit a mispronounced line in script-tts.json and regenerate. The saved word timestamps are machine-provided timing data, not human-verified subtitles.
+
+
+## VoxCPM2 comparison audition (experimental CPU path)
+
+Kokoro remains the current production default. VoxCPM2 is added as a separate A/B experiment so a failed or slow install cannot break the existing voice environment.
+
+### Hardware note for this PC
+
+The official VoxCPM2 acceleration path is NVIDIA CUDA. The Radeon RX 6700 XT is not a CUDA device, so this setup deliberately installs CPU-only PyTorch and forces CPU inference with optimization disabled. VoxCPM2 supports CPU inference, but the project FAQ warns that it is slow. The 2B model requires several GB of disk space; its published reference is about 8 GB of VRAM for the NVIDIA GPU path. Do not expect GPU acceleration on the RX 6700 XT in this Windows setup.
+
+Official references:
+- https://voxcpm.readthedocs.io/en/latest/quickstart.html
+- https://voxcpm.readthedocs.io/en/latest/installation.html
+- https://voxcpm.readthedocs.io/en/latest/faq.html
+- https://voxcpm.readthedocs.io/en/latest/usage_guide.html
+
+### Install
+
+From this voice folder:
+
+    setup_voxcpm2.bat
+
+Use Python 3.10, 3.11 or 3.12. The setup creates a separate .venv-voxcpm2 environment, installs CPU-only PyTorch, and installs VoxCPM2 dependencies. It does not change or reuse the existing .venv used by Kokoro.
+
+### Generate the A/B samples
+
+    run_voxcpm2_audition.bat
+
+The first run downloads the model weights (several GB) into voice/voxcpm2-models/. It then creates a male and female voice-design sample from the same first eight lines of script-tts.json, as one continuous paragraph.
+
+Output:
+
+    projects/upi-behind-the-scan/audio/previews/voxcpm2/
+        voxcpm2-male.wav
+        voxcpm2-female.wav
+        metadata.json
+
+To generate only one voice or change the excerpt length:
+
+    run_voxcpm2_audition.bat --voice male
+    run_voxcpm2_audition.bat --voice female
+    run_voxcpm2_audition.bat --lines 10
+
+The script fixes the seed and uses a restrained documentary-style voice description. The two voice designs may still vary; listen before selecting one.
+
+### Compare with Kokoro
+
+Generate the same eight opening lines with the existing Kokoro voice:
+
+    .venv\Scripts\python.exe generate_audio.py --voice hf_alpha --limit 8
+
+Kokoro output:
+
+    projects/upi-behind-the-scan/audio/previews/hf_alpha-preview.wav
+
+VoxCPM2 outputs are under audio/previews/voxcpm2/.
+
+### Important limitations
+
+- This is an audition only; it does not overwrite audio/hindi-voice.wav or change the renderer.
+- VoxCPM2 is generated as one paragraph to let the model carry intonation across sentence boundaries. Kokoro's current script emits one sentence at a time, so the comparison tests both model quality and the effect of paragraph-level generation.
+- This audition script does not create sentence or word timing sidecars. If VoxCPM2 is selected, add a validated alignment pass before using its narration in the final video renderer.
+- Do not run full-script synthesis on CPU until the short sample's quality and generation time have been assessed.
+- If Windows installation fails, retain the complete error output. VoxCPM2's official FAQ documents Windows Triton issues; this setup disables torch.compile to avoid that path.
