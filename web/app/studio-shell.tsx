@@ -8,7 +8,8 @@ const tasks: { id: Operation; title: string; description: string; label: string 
   { id: "ideas", title: "Find the angle", description: "Turn a broad subject into a strong explainer concept.", label: "IDEAS" },
   { id: "research", title: "Research brief", description: "Search the web and build a cited evidence brief.", label: "RESEARCH" },
   { id: "script", title: "Write the script", description: "Build a narration-ready documentary script.", label: "SCRIPT" },
-  { id: "storyboard", title: "Visual storyboard", description: "Plan diagrams, animation, motion and scenes.", label: "VISUALS" },\n  { id: "visual_code", title: "Generate motion code", description: "Create a self-contained HTML/SVG animation for local rendering.", label: "CODE" },
+  { id: "storyboard", title: "Visual storyboard", description: "Plan diagrams, animation, motion and scenes.", label: "VISUALS" },
+  { id: "visual_code", title: "Generate motion code", description: "Create a self-contained HTML/SVG animation for local rendering.", label: "CODE" },
   { id: "package", title: "YouTube package", description: "Titles, thumbnail concepts, description and chapters.", label: "PUBLISH" },
   { id: "revise", title: "Revise material", description: "Improve existing writing without losing accuracy.", label: "REVISE" },
 ];
