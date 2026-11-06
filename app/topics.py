@@ -1,4 +1,4 @@
-"""Topic selector + video generator for Bean Studio, for Shorts and for long videos.
+"""Topic selector + video generator for Hindi Explainer Studio, for Shorts and long videos.
 
 1. Finds what is working on other channels in the same category: public listings (yt-dlp, no login), each video scored as a
    multiple of its own channel's median views, so a big channel's normal day doesn't look like a hit. Shorts and long videos
@@ -19,9 +19,9 @@ from flask import abort, jsonify, request
 import planner, store
 from ytstate import norm
 
-TYPES = ["What if", "Myth test", "Why", "True story", "Versus", "Ranking", "Levels", "Paradox", "Puzzle",
+TYPES = ["Scenario", "Myth test", "Why", "True story", "Versus", "Ranking", "Timeline", "Paradox", "Puzzle",
          "How it works", "Superlative", "How many", "Map/scale", "Explainer"]
-FMT = [("What if", r"^what if|^what would happen|^what happens"), ("How many", r"^how (many|much|long|far|big|fast|hot|cold|deep|high|old)"),
+FMT = [("Scenario", r"^what if|^what would happen|^what happens"), ("How many", r"^how (many|much|long|far|big|fast|hot|cold|deep|high|old)"),
        ("Versus", r"\bvs\.?\b|versus"), ("Levels", r"\blevels?\b"), ("Paradox", r"paradox"), ("Ranking", r"ranking|ranked|top \d+|\bworst\b|^\d+ "),
        ("Puzzle", r"which .* (first|more|faster)|puzzle|riddle|can you (guess|solve)"),
        ("Explainer", r"explained|the science of|everything you need|\ball the\b"),
@@ -32,10 +32,10 @@ FMT = [("What if", r"^what if|^what would happen|^what happens"), ("How many", r
        ("Myth test", r"^(is|are|can|could|does|do)\b|myth|actually|really|truth")]
 OFF_BRAND = re.compile(r"soldier|military|bomber|\bwar\b|russia|ukrain|israel|taliban|\bgun\b|shot\b|kill|murder|suicide|\bsex|porn|terror|nazi|trump|biden", re.I)
 STOP = set("what if you your the a an of to how would it take and is are do does why can could in on for with from at".split())
-VOICES = [["af_heart", "Heart · warm female (channel default)"], ["am_michael", "Michael · male"], ["bf_emma", "Emma · British female"], ["bm_george", "George · British male"]]
+VOICES = [["own_recording", "Own Hindi voice recording (recommended)"], ["hindi_tts", "Configured Hindi TTS (only if installed and tested)"]]
 VOICE_IDS = [v[0] for v in VOICES]
 LENGTHS = {"short": [30, 40, 50, 60], "long": [300, 420, 540, 720]}       # seconds; the Agent tab and the wizards offer these
-WORDS_PER_SECOND = 3.1                                                       # the Kokoro voice at speed 1.0 (measured: 3.05 to 3.3 on our scripts)
+WORDS_PER_SECOND = 2.4                                                       # draft-only Hindi pacing estimate; rendered audio timing is authoritative
 KINDS = ("short", "long")
 
 
@@ -43,7 +43,7 @@ def length_instructions(seconds):
     """what to tell the hindi-explainer skill when the user picked a duration"""
     seconds = int(seconds)
     words = round(seconds * WORDS_PER_SECOND)
-    head = f"TARGET LENGTH: {seconds} seconds of voiceover, about {words} words ({WORDS_PER_SECOND} words a second)."
+    head = f"TARGET LENGTH: {seconds} seconds of Hindi narration. The {words}-word estimate is only a rough drafting guide; actual recorded duration and alignment are authoritative."
     if seconds <= 60:
         return (head + f" Write the script to this length, run build.py voice <project> --target {seconds}, and rewrite until it prints TARGET {seconds}s: OK"
                 " (within 4 seconds). It is a Short, so it renders as 9:16 with the hindi-explainer skill.")
@@ -251,16 +251,16 @@ def register(app, ROOT, cfg, start_job, JOBS, start_agent=None):
 Read {cfile}. "candidates" are {what[1]} from other channels that beat their own channel's median views by the "multiple" shown. "already_made_titles" are topics we have made or planned: never repeat or closely echo them.
 
 Pick THREE different candidates and adapt each into an ORIGINAL topic for our channel. Borrow the topic area and the video format only: never copy a title, a script or a distinctive phrase. Rules:
-- 3 different video types (from {TYPES}); at most one "What if". Title in the channel voice: a plain question or claim, under 60 characters, no hype words, no all caps.
+- 3 different video types (from {TYPES}); at most one speculative scenario, and only when counterfactual reasoning is central to the subject. Title in the channel voice: a plain question or claim, under 60 characters, no hype words, no all caps.
 - Every topic must be explainable through an intentional visual system (maps, data, timelines, diagrams, code-generated animation, real visual references), without relying on mascots or decorative motion, and {what[2]}.
 - Vary the GENRE across the three (do not make all three science), and prefer topics where the viewer learns something they can use or explain to a friend.
-- "Bad ideas" is only the channel's name: do not force a bad-idea framing onto every topic.
+- Do not force sensational, conspiratorial or outrage-driven framing onto any topic.
 - Only topics whose facts you are confident about, or flag the risk honestly.
 - Prefer the highest "multiple", but variety beats ranking.
 
 Write a JSON array of exactly 3 objects to {out} and nothing else on disk. Each object:
 {what[3]}
-Do not use any other tool than reading that file and writing that file. When done, also print the same JSON array as your final message."""
+Do not browse beyond the topic candidates for idea generation; mark every claim that will need primary-source verification during the research step. When done, also print the same JSON array as your final message."""
         j = run_agent(f"topics · 3 {kind} ideas", prompt, c.get("options_model") or None, "plain")
         b = {"id": bid, "kind": kind, "job": j["id"], "out": str(out), "status": "running", "candidates": cands, "options": [], "started": time.time()}
         st["batches"][bid] = b
@@ -295,7 +295,7 @@ Do not use any other tool than reading that file and writing that file. When don
         kind = kind_of(b.get("kind"))
         title = clean(t.get("title"), 120)
         if not title: abort(400, "no topic")
-        voice = a.get("voice") if a.get("voice") in VOICE_IDS else "af_heart"
+        voice = a.get("voice") if a.get("voice") in VOICE_IDS else "own_recording"
         speed = round(number(a.get("speed"), 1.0, 0.9, 1.15), 2)
         dur = int(number(a.get("minutes"), 7, 4, 15) * 60) if kind == "long" else int(number(a.get("duration"), 40, 25, 60))
         slug = slug_for(title)
@@ -306,13 +306,13 @@ Do not use any other tool than reading that file and writing that file. When don
             bp = (ROOT / str(t["brief"])).resolve()
             if ROOT.resolve() in bp.parents and bp.is_file(): brief = str(bp)
         if kind == 'short':
-            thumb_line = 'make it at make time, like every Short: follow ~/.claude/skills/hindi-explainer-thumbnail-short/SKILL.md (step 9)'
+            thumb_line = 'make it at make time: follow .claude/skills/thumbnail/SKILL.md'
         elif a.get('thumb_now'):
-            thumb_line = 'the user chose to draw it NOW, after the video: follow ~/.claude/skills/hindi-explainer-thumbnail-long/SKILL.md (step 6 below)'
+            thumb_line = 'the user chose to draw it now: follow .claude/skills/thumbnail/SKILL.md after the video'
         else:
             thumb_line = 'do NOT make one at make time: a long video gets its own from the Better thumbnail button (three ideas, the user picks one)'
-        old6_text = f'6. NO thumbnail: do not write web/thumb.js, do not run build.py thumb, do not create a thumbnail file. Write {slug}-youtube.txt for a long video (references/youtube.md, but its THUMBNAIL section is the single line "Not made yet: use the Better thumbnail button in Bean Studio", and lint the title with title.py without --thumb: no #shorts, chapters from {slug}-chapters.txt, 6 to 8 sources, tags, a pinned comment, no list of spin-off Shorts: the user has a separate button for that).'
-        step6 = (f"6. Thumbnail: draw it now, following ~/.claude/skills/hindi-explainer-thumbnail-long/SKILL.md (longform step 10): web/thumb.js, build.py thumb {slug}, check stills/thumb-crops.png, and the YouTube sheet's THUMBNAIL section with the real File, Text, Still and Brief. Then {slug}-youtube.txt (references/youtube.md, no #shorts, chapters from {slug}-chapters.txt, 6 to 8 sources, tags, and lint the title with title.py --thumb \"<the thumbnail words>\")."
+        old6_text = f'6. NO thumbnail: do not write web/thumb.js, do not run build.py thumb, do not create a thumbnail file. Write {slug}-youtube.txt for a long video (the Hindi Explainer Studio YouTube packaging rules, but its THUMBNAIL section is the single line "Not made yet: use the Better thumbnail button in Hindi Explainer Studio", and check the title length and accuracy without --thumb: no #shorts, chapters from {slug}-chapters.txt, 6 to 8 sources, tags, a pinned comment, no list of spin-off Shorts: the user has a separate button for that).'
+        step6 = (f"6. Thumbnail: draw it now, following .claude/skills/thumbnail/SKILL.md (longform step 10): web/thumb.js, build.py thumb {slug}, check stills/thumb-crops.png, and the YouTube sheet's THUMBNAIL section with the real File, Text, Still and Brief. Then {slug}-youtube.txt (the Hindi Explainer Studio packaging rules, no #shorts, chapters from {slug}-chapters.txt, 6 to 8 sources, tags, and check the title length and accuracy --thumb \"<the thumbnail words>\")."
                  if a.get('thumb_now') and kind == 'long' else old6_text)
         common = f"""TOPIC: {title}
 Video type: {clean(t.get('type'), 40)}
@@ -325,11 +325,11 @@ PROJECT NAME: {slug}   (create it with build.py new {slug}; it lands in {c['proj
 
 THE USER'S ANSWERS (follow them):
 - {length_instructions(dur)}
-- Voice: {voice}   Speed: {speed}  (build.py voice {slug} --voice {voice} --speed {speed} --target {dur})
-- Tone: {clean(a.get('tone') or 'dry and deadpan, the channel default', 80)}
-- Cast: {'reuse the red narrator (BEAN in the visual motif-avatar project) as the hero, with other visual metaphors for the other ideas' if a.get('cast') == 'host' else 'no mascot cast. Use a coherent documentary visual system; assign visual identities to forces, institutions or datasets only when that genuinely clarifies the explanation'}
+- Voice: {voice}. For own_recording, import a clean Hindi recording and align it; for hindi_tts, use only the configured, tested Hindi TTS. Measure the rendered audio against the {dur}s target; never assume English voice timing applies to Hindi.
+- Tone: {clean(a.get('tone') or 'serious, clear, composed and engaging', 80)}
+- Visual treatment: use the documentary visual system; no recurring mascot or bean characters. Use visual metaphors only when they clarify a mechanism.
 - Ending: {clean(a.get('ending') or 'a concise evidence-based conclusion that resolves the opening question', 80)}
-- Background music: {'on, and it follows the script: musicMood() changes the mood with the feeling (see the skill)' if a.get('music', True) else 'off (pass --no-music to build.py video)'}
+- Background music: {'on, and it follows the script: musicMood() follows the narrative tone and evidence (see the skill)' if a.get('music', True) else 'off (pass --no-music to build.py video)'}
 - Channel outro: {'appended' if a.get('outro', True) else 'left off (pass --no-outro to build.py video)'}
 - Thumbnail: {thumb_line}.
 - Extra notes: {clean(a.get('notes'), 400) or 'none'}
@@ -338,18 +338,18 @@ THE USER'S ANSWERS (follow them):
             prompt = f"""Make a new Short with the hindi-explainer skill. Read .claude/skills/hindi-explainer/SKILL.md and the files it points to (.claude/skills/hindi-explainer/references/visual-language.md and .claude/skills/hindi-explainer/references/editorial-standards.md) first, and .claude/skills/hindi-explainer/references/channel-voice.md for the channel voice.
 
 {common}
-The user has approved the topic and settings. Complete the research and script package, but stop before rendering if high-impact factual claims remain unresolved, and keep it lean (a typical Short is about 30 tool calls): read each reference file once and do not re-read it; score the five candidate first lines in ONE hookscore.py call (the yt-script skill, as the hindi-explainer skill says); at most 6 web searches or fetches in total; write each file with one Write, not many small edits; check the stills in at most two rounds; then script, fact-check (search the web; hedge anything uncertain; keep the sources for the sheet), cast, shots, build.py check, stills of every shot checked for overlaps and caption placement, build.py video, build.py sheet, the thumbnail (SKILL.md step 9) and the YouTube upload sheet (step 10). Do not upload anything and do not touch other projects. Finish by printing the project folder, the title and the thumbnail text."""
+The user has approved the topic and settings. Complete the research and script package, but stop before rendering if high-impact factual claims remain unresolved, and keep it lean (a typical Short is about 30 tool calls): read each reference file once and do not re-read it; write five hook candidates and select the clearest one using the hook criteria in .claude/skills/hindi-script/SKILL.md; at most 6 web searches or fetches in total; write each file with one Write, not many small edits; check the stills in at most two rounds; then research, script, fact-check (search authoritative sources; hedge uncertainty; write sources.md), storyboard, scene code, build.py check, stills of every shot checked for overlaps and caption placement, build.py video, build.py sheet, the thumbnail (SKILL.md step 9) and the YouTube upload sheet (step 10). Do not upload anything and do not touch other projects. Finish by printing the project folder, the title and the thumbnail text."""
         else:
             structure = clean(a.get("structure") or "as in the research brief or the topic's chapters", 80)
-            prompt = f"""Make a LONG video ({dur // 60} minutes, 16:9) for the channel with the longform skill. Read .claude/skills/longform/SKILL.md and .claude/skills/longform/references/wide-storytelling.md, then the files they point to in ~/.claude/skills/hindi-explainer (SKILL.md, .claude/skills/hindi-explainer/references/visual-language.md and .claude/skills/hindi-explainer/references/editorial-standards.md), and .claude/skills/hindi-explainer/references/channel-voice.md for the channel voice. Use the yt-chapters, yt-seo and yt-package skills' rules for the chapters, description and title.
+            prompt = f"""Make a LONG video ({dur // 60} minutes, 16:9) for the channel with the longform skill. Read .claude/skills/longform/SKILL.md and .claude/skills/longform/references/wide-storytelling.md, then .claude/skills/hindi-explainer/SKILL.md and its references, and .claude/skills/hindi-explainer/references/channel-voice.md for the channel voice. Use .claude/skills/longform/SKILL.md and the repository editorial standards for chapters, description and title.
 
 {common}- Structure: {structure}
 
 The user has approved the topic and settings. Complete the research and script package, but stop before rendering if high-impact factual claims remain unresolved, in this order:
-1. build.py new {slug} --wide (it lands in {c['projects_dir']}). The HOOK first, with the yt-script skill: five candidate opening lines scored with its hookscore.py, kept in {slug}-hooks.txt with the scores, the best one used; then the turn by 0:45, no channel intro and no subscribe pitch. script.json: one sentence per entry, written chapter by chapter, a payoff that calls back to the hook. Dry, calm, honest, engaging in the pictures and the last line of each chapter; no hype words.
+1. build.py new {slug} --wide (it lands in {c['projects_dir']}). The HOOK first, with .claude/skills/hindi-script/SKILL.md: draft five candidate openings, evaluate promise, specificity and accuracy, and record the chosen hook plus rationale in {slug}-hooks.md; then the turn by 0:45, no channel intro and no subscribe pitch. script.json: one sentence per entry, written chapter by chapter, a payoff that calls back to the hook. Calm, precise, evidence-led Hindi narration, with a memorable visual explanation at each chapter turn; no hype words.
 2. Fact-check every claim with web searches of primary sources (the paper, the review, the agency page). Hedge what is uncertain, drop what you cannot verify, never invent a number. Write {slug}-sources.md: claim, link, and how far you verified it (full text, abstract only, secondary report).
 3. chapters.json (5 to 9 chapters, [{{"title", "line"}}], titles of 3 to 5 words that promise what the section gives, as the yt-chapters skill says), then build.py voice {slug} --voice {voice} --speed {speed} --target {dur}; rewrite and re-run until it prints TARGET {dur}s: OK; then build.py chapters {slug} until it prints "valid".
-4. The SCENE AND SOUND PLAN: {slug}-plan.md, one row per chapter with the set and place, time of day and colour, the visual metaphors on screen, props, the music mood and why, the sound or silence beat and the visual analogy (the scenes and the music must change with what the script says: see .claude/skills/longform/references/wide-storytelling.md). Then a cast of different visual metaphors (see "A cast of visual metaphors" in references/style.md) in web/cast.js, then web/shots/ch01.js, ch02.js, ... ONE CHAPTER AT A TIME: write the chapter's shots, render 2 or 3 stills per chapter with build.py stills (read the single stills/sheet.jpg it writes), fix what is wrong, then the next chapter. build.py check must show no [error], no shot over 20 s and no music warning (use setScene() sets and musicMood() moods, at least 4 moods).
+4. The SCENE AND SOUND PLAN: {slug}-plan.md, one row per chapter with the set and place, time of day and colour, the visual metaphors on screen, props, the music mood and why, the sound or silence beat and the visual analogy (the scenes and the music must change with what the script says: see .claude/skills/longform/references/wide-storytelling.md). Then a cast of different visual metaphors (see "A coherent visual language" in references/style.md) in web/cast.js, then web/shots/ch01.js, ch02.js, ... ONE CHAPTER AT A TIME: write the chapter's shots, render 2 or 3 stills per chapter with build.py stills (read the single stills/sheet.jpg it writes), fix what is wrong, then the next chapter. build.py check must show no [error], no shot over 20 s and no music warning (use setScene() sets and musicMood() moods, at least 4 moods).
    Burned-in captions: {'ON (set CAP.on = true at the top of cast.js)' if a.get('captions') else 'OFF, the long-form standard: the .srt is uploaded as YouTube captions; put numbers and key words on screen as label shapes'}.
 5. build.py video {slug}{'' if a.get('music', True) else ' --no-music'}{'' if a.get('outro', True) else ' --no-outro'}, then build.py sheet {slug} and look at the sheet once.
 6. {step6}
