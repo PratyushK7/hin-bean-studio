@@ -39,3 +39,7 @@ projects/*/*-upload.json
 # Research downloads and caches
 research/cache/
 research/downloads/
+
+# Local Canvas render dependencies and preview frames
+projects/*/render/node_modules/
+projects/*/render/stills/
