@@ -41,7 +41,7 @@ Before making a video:
 2. Read `.claude/skills/hindi-explainer/SKILL.md`.
 3. Verify the installed renderer's actual drawing API and current example project.
 4. Confirm the renderer has a working Devanagari font and glyph shaping.
-5. Confirm the chosen Hindi voice/TTS and speech aligner support Hindi.
+5. Confirm the human Hindi voice recording and speech aligner support Hindi. TTS is not enabled in the wizard yet.
 
 Do not assume the original English-oriented Kokoro/Parakeet setup automatically works for Hindi. Run the short Hindi voice and subtitle smoke test described in [engine/README.md](engine/README.md).
 
