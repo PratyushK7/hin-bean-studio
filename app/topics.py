@@ -186,8 +186,8 @@ def register(app, ROOT, cfg, start_job, JOBS, start_agent=None):
                 if b["kind"] == "long":
                     o["chapters"] = strings(o.get("chapters"), 9, 80); o["reuse_shorts"] = strings(o.get("reuse_shorts"), 6, 80)
                     o["sources_to_check"] = strings(o.get("sources_to_check"), 6, 120)
-                    try: o["runtime_min"] = int(min(15, max(4, float(o.get("runtime_min") or 7))))
-                    except (TypeError, ValueError): o["runtime_min"] = 7
+                    try: o["runtime_min"] = int(min(15, max(8, float(o.get("runtime_min") or 10))))
+                    except (TypeError, ValueError): o["runtime_min"] = 10
                 o["adapted"] = True; good.append(o)
         if len(good) < 3:                         # fill up (or replace) with the raw outliers, clearly marked
             for c in b["candidates"]:
