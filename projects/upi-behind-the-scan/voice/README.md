@@ -165,7 +165,7 @@ It creates .venv-indus-tts, installs CPU-only PyTorch and the pinned Pocket-TTS 
 
     run_indus_pocket_tts.bat
 
-The first eight script lines are joined into one paragraph. The default uses int8 weights and two CPU threads. The generator reports model-load time and measured synthesis real-time factor.
+The first eight script lines are joined into one paragraph. The default uses int8 weights and one CPU thread, matching the model publisher's benchmark configuration. The generator reports model-load time and measured synthesis real-time factor. You can test two threads with the --threads 2 option.
 
 Output:
 
