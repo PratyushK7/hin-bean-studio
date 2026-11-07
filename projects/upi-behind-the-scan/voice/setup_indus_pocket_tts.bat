@@ -8,9 +8,19 @@ echo Model weights: approximately 440 MB, plus runtime dependencies.
 echo.
 
 if not exist ".venv-indus-tts\Scripts\python.exe" (
-  echo [1/4] Creating Python 3.11 environment...
-  py -3.11 -m venv .venv-indus-tts
-  if errorlevel 1 goto :failed
+  echo [1/4] Creating Python environment...
+  py -3.11 -m venv .venv-indus-tts >nul 2>nul
+  if errorlevel 1 (
+    py -3.10 -m venv .venv-indus-tts >nul 2>nul
+  )
+  if errorlevel 1 (
+    py -3.12 -m venv .venv-indus-tts >nul 2>nul
+  )
+  if errorlevel 1 (
+    echo Could not find Python 3.10, 3.11 or 3.12.
+    echo Install one of these versions and enable the Python Launcher.
+    goto :failed
+  )
 ) else (
   echo [1/4] Reusing .venv-indus-tts.
 )
