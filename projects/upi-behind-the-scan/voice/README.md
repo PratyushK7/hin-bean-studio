@@ -114,7 +114,7 @@ To generate only one voice or change the excerpt length:
     run_voxcpm2_audition.bat --voice female
     run_voxcpm2_audition.bat --lines 10
 
-The script fixes the seed and uses a restrained documentary-style voice description. The two voice designs may still vary; listen before selecting one.
+The script uses a restrained documentary-style voice description. The installed PyPI 2.0.3 runtime does not expose fixed-seed generation, so repeated runs may vary slightly; listen before selecting one.
 
 ### Compare with Kokoro
 
