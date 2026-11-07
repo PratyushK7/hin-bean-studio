@@ -43,7 +43,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lines", type=int, default=8)
     parser.add_argument("--timesteps", type=int, default=10)
     parser.add_argument("--cfg", type=float, default=1.6)
-    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--model", default=MODEL_ID)
     return parser.parse_args()
 
@@ -122,7 +121,6 @@ def main() -> int:
         "optimize": False,
         "inference_timesteps": args.timesteps,
         "cfg_value": args.cfg,
-        "seed": args.seed,
         "excerpt_lines": args.lines,
         "excerpt_text": excerpt,
         "outputs": [],
@@ -139,7 +137,6 @@ def main() -> int:
             text=f"{prompt}{excerpt}",
             cfg_value=args.cfg,
             inference_timesteps=args.timesteps,
-            seed=args.seed,
             normalize=True,
             retry_badcase=True,
         )
