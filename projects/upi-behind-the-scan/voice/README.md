@@ -137,3 +137,46 @@ For an additional comparison, generate Kokoro with its original sentence-by-sent
 - This audition script does not create sentence or word timing sidecars. If VoxCPM2 is selected, add a validated alignment pass before using its narration in the final video renderer.
 - Do not run full-script synthesis on CPU until the short sample's quality and generation time have been assessed.
 - If Windows installation fails, retain the complete error output. VoxCPM2's official FAQ documents Windows Triton issues; this setup disables torch.compile to avoid that path.
+
+
+## Fast CPU alternative: Indus Pocket TTS (Hindi/Hinglish)
+
+VoxCPM2 is a 2B model and is not practical on this PC's CPU-only path. Indus Pocket TTS is a much smaller 110M-parameter Hindi/Hinglish model with int8 quantization and Windows CPU support. The model card reports 6.3x real-time on an AMD EPYC test server; this is not a benchmark for this PC, so the local script reports its actual measured synthesis speed.
+
+Model card: https://huggingface.co/Indus-Labs/indus-pocket-tts
+
+### Trade-offs to know
+
+- It has one bundled female voice, Inaya; no built-in male voice or voice cloning.
+- It is trained primarily on conversational Hindi/Hinglish and short spoken customer-service lines.
+- The model publisher lists literary/descriptive prose and long technical sentences as weaker cases. This is relevant to an educational explainer, so listen to the sample before using it for a full video.
+- Hindi words should be in Devanagari; Romanised Hindi is read as English. The UPI script-tts.json is already Devanagari with selected English technical terms.
+- The model weights are CC-BY-4.0. Include attribution when publishing generated audio. The upstream inference scripts and runtime are MIT; see the model card for the complete component licences.
+
+### Install on Windows
+
+From this voice folder:
+
+    setup_indus_pocket_tts.bat
+
+It creates .venv-indus-tts, installs CPU-only PyTorch and the pinned Pocket-TTS runtime, then downloads the approximately 440 MB model files into voice/indus-pocket-tts-model/. It does not modify the Kokoro or VoxCPM2 environments.
+
+### Generate the short audition
+
+    run_indus_pocket_tts.bat
+
+The first eight script lines are joined into one paragraph. The default uses int8 weights and two CPU threads. The generator reports model-load time and measured synthesis real-time factor.
+
+Output:
+
+    projects/upi-behind-the-scan/audio/previews/indus-pocket-tts/
+        indus-pocket-tts-hinglish.wav
+        metadata.json
+
+Optional settings:
+
+    run_indus_pocket_tts.bat --lines 12
+    run_indus_pocket_tts.bat --threads 1
+    run_indus_pocket_tts.bat --no-int8
+
+Do not replace audio/hindi-voice.wav or use this audition as final video narration until the complete UPI script has been listened to. It does not currently generate sentence timing sidecars.
