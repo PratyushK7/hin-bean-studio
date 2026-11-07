@@ -46,7 +46,7 @@ if errorlevel 1 goto :failed
 
 echo.
 echo Verifying imports...
-".venv-voxcpm2\Scripts\python.exe" -c "import torch; from voxcpm import VoxCPM; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('VoxCPM import: OK)"
+".venv-voxcpm2\Scripts\python.exe" -c "import torch; from voxcpm import VoxCPM; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('VoxCPM import: OK')"
 if errorlevel 1 goto :failed
 
 echo.
