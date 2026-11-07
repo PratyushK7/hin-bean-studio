@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
         description="Generate a short Hindi/Hinglish CPU TTS audition."
     )
     parser.add_argument("--lines", type=int, default=8)
-    parser.add_argument("--threads", type=int, default=2)
+    parser.add_argument("--threads", type=int, default=1)
     parser.add_argument(
         "--no-int8",
         action="store_true",
